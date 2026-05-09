@@ -1,22 +1,45 @@
 #include <Arduino.h>
 #include <debug.h>
-#include <builtinled.h>
+#include "bultinrgbled.h"
+
+unsigned long lastEvent = 0;
+int phase = 0;
 
 void setup()
 {
   setup_debug();
-  setup_bultin_led();
+  setup_bultin_rgb_led();
+  rgb_led(SUCCESS, 2);
 }
-
-unsigned long lastErrorTrigger = 0;
 
 void loop()
 {
-  led_loop();
+  rgb_led_loop();
 
-  if (millis() - lastErrorTrigger > 5000)
+  unsigned long now = millis();
+
+  switch (phase)
   {
-    lastErrorTrigger = millis();
-    led_error();
+  case 0:
+    // after 2 seconds -> fail
+    if (now > 2000)
+    {
+      rgb_led(ERROR, 3); // red for 3 sec
+      phase = 1;
+    }
+    break;
+
+  case 1:
+    // wait until error expires
+    if (now > 7000)
+    {
+      rgb_led(SUCCESS, 2); // green for 2 sec
+      phase = 2;
+    }
+    break;
+
+  case 2:
+    // done
+    break;
   }
 }
