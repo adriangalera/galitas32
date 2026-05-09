@@ -22,11 +22,11 @@ void setup_bultin_led()
     pinMode(_pin, OUTPUT);
 }
 
-void led_error(uint8_t blinks)
+void led_error()
 {
     state = ERROR;
     blinkCount = 0;
-    targetBlinks = blinks;
+    targetBlinks = 20;
     lastToggle = millis();
     level = false;
 }
@@ -34,20 +34,16 @@ void led_error(uint8_t blinks)
 void led_loop()
 {
     unsigned long now = millis();
-    Debugf("LED loop, state: %d\n", state);
     switch (state)
     {
 
     case ERROR:
-        Debugf("In ERROR state, blinkCount: %d, targetBlinks: %d\n", blinkCount, targetBlinks);
-        Debugf("Time since last toggle: %lu ms\n", now - lastToggle);
-        if (now - lastToggle >= 80)
+        if (now - lastToggle >= 50)
         {
             lastToggle = now;
 
             level = !level;
             digitalWrite(_pin, level ? HIGH : LOW);
-            Debugf("LED toggled to %s\n", level ? "HIGH" : "LOW");
             if (level)
             {
                 blinkCount++;

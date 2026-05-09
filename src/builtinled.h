@@ -3,4 +3,4 @@
 
 void setup_bultin_led();
 void led_loop();
-void led_error(uint8_t blinks);
+void led_error();
