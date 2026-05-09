@@ -13,4 +13,4 @@ Features:
 
 This is built using [ESP32-S3-CAM board](https://www.amazon.es/dp/B0F4D8ZY6L?ref=ppx_yo2ov_dt_b_fed_asin_title&th=1). 
 
-In Arduino IDE, select `ESP32S3 Dev Module` board.
+Built with [PlatformIO](https://docs.platformio.org/en/latest/)
