@@ -1,15 +1,14 @@
 #include <Arduino.h>
+#include <debug.h>
+#include <builtinled.h>
 
-#define DEBUG_ENABLED 1
-
-#include "debug.h"
-
-void setup() {
-  debugBegin();
-  DEBUG("Debugger initialized");
+void setup()
+{
+  setup_debug();
+  setup_bultin_led();
 }
 
-void loop() {
-  DEBUG("Hello, ESP32-S3!");
-  delay(1000);
+void loop()
+{
+  led_loop();
 }
