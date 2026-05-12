@@ -17,8 +17,7 @@ void setup()
 void loop()
 {
   DoorState doorState = read_door_sensor();
-  Debug("Door state: ");
-  Debug(doorState == DOOR_OPEN ? "OPEN" : "CLOSED");
+  Debugf("Door state: %s\n", doorState == DOOR_OPEN ? "OPEN" : "CLOSED");
   if (doorState == DOOR_OPEN)
   {
     rgb_led(WARNING);
