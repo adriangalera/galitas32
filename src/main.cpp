@@ -3,14 +3,11 @@
 #include "bultinrgbled.h"
 #include "door.h"
 
-unsigned long lastEvent = 0;
-int phase = 0;
-
 void setup()
 {
   setup_debug();
   setup_bultin_rgb_led();
-  rgb_led(SUCCESS, 2);
+  bultin_rgb_led(SUCCESS, 2);
   setup_door_sensor();
 }
 
@@ -20,11 +17,11 @@ void loop()
   Debugf("Door state: %s\n", doorState == DOOR_OPEN ? "OPEN" : "CLOSED");
   if (doorState == DOOR_OPEN)
   {
-    rgb_led(WARNING);
+    bultin_rgb_led(WARNING);
   }
   else
   {
-    rgb_led(SUCCESS);
+    bultin_rgb_led(SUCCESS);
   }
   delay(10);
 }

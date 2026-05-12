@@ -12,5 +12,5 @@ enum LedState
 
 
 void setup_bultin_rgb_led();
-void rgb_led(LedState state, int apply_for_sec = 0);
-void rgb_led_loop();
+void bultin_rgb_led(LedState state, int apply_for_sec = 0);
+void builtin_rgb_led_loop();

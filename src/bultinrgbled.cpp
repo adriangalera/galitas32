@@ -41,7 +41,7 @@ static void apply_state(LedState s)
     pixel.show();
 }
 
-void rgb_led(LedState state, int apply_for_sec)
+void bultin_rgb_led(LedState state, int apply_for_sec)
 {
     apply_state(state);
 
@@ -55,7 +55,7 @@ void rgb_led(LedState state, int apply_for_sec)
     }
 }
 
-void rgb_led_loop()
+void builtin_rgb_led_loop()
 {
     if (stateExpiresAt != 0 &&
         millis() >= stateExpiresAt &&
@@ -72,5 +72,5 @@ void setup_bultin_rgb_led()
     pixel.clear();
     pixel.show();
 
-    rgb_led(IDLE);
+    bultin_rgb_led(IDLE);
 }
