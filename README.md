@@ -15,6 +15,68 @@ This is built using [ESP32-S3-CAM board](https://www.amazon.es/dp/B0F4D8ZY6L?ref
 
 Built with [PlatformIO](https://docs.platformio.org/en/latest/)
 
+## Requirements
+
+The physical mechanisms must work regardless of the network connection, i.e: door sensor, LED strip, camera, RFID reader and speaker. 
+
+When the network is enabled, it will act as an enhacement.
+
+> `*` optional steps (the alarm will still work without them)
+
+### Startup procedure
+
+1. Setup read sensor
+2. Setup LED strip
+3. Setup camera
+4. Setup RFID reader
+5. Setup speaker
+6. `*`Setup Wifi
+7. `*`Setup MQTT
+8. Determine the lock status: armed/disarmed
+
+### Door sensor
+
+When the door is open:
+
+- The LED strip is powered, the color depends on the lock status:
+    - Armed: blinking red/blue like a policen siren
+    - Disarmed: welcoming color: light orange or something like this
+
+- Camera takes pictures for 30 seconds one picture each second:
+    - Armed: send the pictures via MQTT (to telegram) and store the images in the SD
+    - Disarmed: store the images in the SD
+
+- Speaker: 
+    - Armed: powered and making noises
+    - Disarmed: do nothing
+
+- `*` MQTT:
+    - Armed: While open send message about door opened
+    - Disarmed: While open send message about door opened
+
+When the door is closed:
+
+- LED strip: powered down
+- Camera: stop take pictures task (if running)
+- Speaker: powered down
+- MQTT: stop sending message task
+
+
+### RFID reader
+
+The RFID read will be used to toogle the status and deactivate the alerting devices when the alarm is armed:
+
+When the RFID tag is detected in the reader:
+- Disarmed: 
+    - Set the alarm in armed state
+    - Send a message about the state toggling `*`
+
+- Armed:
+    - Set the alarm in disarmed state
+    - Send a message about the state toggling `*`
+    - The alerting devices will see the disarmed state
+
+
 ## Wirings
 
 ### Door sensor
