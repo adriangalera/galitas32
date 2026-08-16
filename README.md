@@ -147,3 +147,12 @@ GND ---------------- |   TIP120
 **Collector**: connected to the negative side of the buzzer. This acts as the switch to close the circuit when the base has signal coming from ESP32.
 
 **Emitter**: connected to GND
+
+## Case
+
+The 3D design of the case it is AI-enabled. Make sure to install:
+
+```bash
+brew install admesh
+pip3 install trimesh rtree scipy
+```
