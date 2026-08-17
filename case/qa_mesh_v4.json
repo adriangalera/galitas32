@@ -1,0 +1,186 @@
+{
+  "front_shell.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -37.0,
+        -22.0,
+        -95.0
+      ],
+      [
+        37.0,
+        8.54,
+        95.0
+      ]
+    ],
+    "extents_mm": [
+      74.0,
+      30.54,
+      190.0
+    ],
+    "volume_mm3": 60755.362
+  },
+  "rear_shell.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -37.0,
+        0.0,
+        -95.0
+      ],
+      [
+        37.0,
+        22.0,
+        95.0
+      ]
+    ],
+    "extents_mm": [
+      74.0,
+      22.0,
+      190.0
+    ],
+    "volume_mm3": 66371.007
+  },
+  "camera_cradle.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -14.55,
+        -5.0,
+        -15.0
+      ],
+      [
+        14.55,
+        14.0,
+        15.0
+      ]
+    ],
+    "extents_mm": [
+      29.1,
+      19.0,
+      30.0
+    ],
+    "volume_mm3": 3211.624
+  },
+  "dupont_insert_2pin.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -10.25,
+        -5.95,
+        -6.25
+      ],
+      [
+        10.25,
+        1.1,
+        6.25
+      ]
+    ],
+    "extents_mm": [
+      20.5,
+      7.05,
+      12.5
+    ],
+    "volume_mm3": 1211.106
+  },
+  "dupont_insert_3pin.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -10.25,
+        -5.95,
+        -6.25
+      ],
+      [
+        10.25,
+        1.1,
+        6.25
+      ]
+    ],
+    "extents_mm": [
+      20.5,
+      7.05,
+      12.5
+    ],
+    "volume_mm3": 1201.887
+  },
+  "dupont_insert_4pin.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -10.25,
+        -5.95,
+        -6.25
+      ],
+      [
+        10.25,
+        1.1,
+        6.25
+      ]
+    ],
+    "extents_mm": [
+      20.5,
+      7.05,
+      12.5
+    ],
+    "volume_mm3": 1192.668
+  },
+  "dupont_insert_6pin.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        -10.25,
+        -5.95,
+        -6.25
+      ],
+      [
+        10.25,
+        1.1,
+        6.25
+      ]
+    ],
+    "extents_mm": [
+      20.5,
+      7.05,
+      12.5
+    ],
+    "volume_mm3": 1174.231
+  },
+  "camera_angle_gauge.stl": {
+    "watertight": true,
+    "winding_consistent": true,
+    "connected_components": 1,
+    "bounds_mm": [
+      [
+        0.0,
+        0.0,
+        -1.2
+      ],
+      [
+        30.0,
+        17.2,
+        1.2
+      ]
+    ],
+    "extents_mm": [
+      30.0,
+      17.2,
+      2.4
+    ],
+    "volume_mm3": 746.88
+  }
+}

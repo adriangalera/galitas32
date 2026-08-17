@@ -1,0 +1,45 @@
+ESP32 Alarm Case v4 - geometry verification
+
+Mesh checks
+-----------
+All printable STLs were loaded with trimesh after OpenSCAD CGAL export.
+All are watertight, winding-consistent, and a single connected mesh component:
+- front_shell.stl: PASS
+- rear_shell.stl: PASS
+- camera_cradle.stl: PASS
+- dupont_insert_2pin.stl: PASS
+- dupont_insert_3pin.stl: PASS
+- dupont_insert_4pin.stl: PASS
+- dupont_insert_6pin.stl: PASS
+- camera_angle_gauge.stl: PASS
+
+USB power-entry checks
+----------------------
+- Dedicated power-cable opening exists at the bottom rear edge: PASS
+- Opening faces downward when the enclosure is wall-mounted: PASS
+- Opening is centered at x=0, away from both M3 closure axes at x=+/-20 mm: PASS
+- USB opening is below the Dupont bay zone (bay center z=-57 mm): PASS
+- USB opening does not intersect the vertical +5 V / GND bus clip zone: PASS
+- Two internal zip-tie strain-relief bridges are present: PASS
+- Strain-relief bridges are integrated into the rear shell and are not floating solids: PASS
+- Strain-relief geometry does not penetrate the exterior rear face: PASS by construction
+- Rear shell remains one connected printable mesh after adding the USB entry and strain relief: PASS
+
+Rear-shell retained layout checks
+---------------------------------
+- Vertical +5 V and GND buses remain on opposite sides: PASS
+  Center-to-center separation = 58 mm.
+- Bus supports avoid PCB rails: PASS
+- Bus supports avoid Dupont bays: PASS
+- Bus supports avoid lower M3 closure screws: PASS
+- Bus supports avoid camera mechanism: PASS
+- Copper buses remain laterally insertable/removable via inward-facing clip mouths: PASS by construction.
+
+Printer envelope
+----------------
+Rear shell bounds remain approximately 74 x 22 x 190 mm.
+All parts fit within an Artillery Genius build envelope when suitably oriented: PASS.
+
+Important fit note
+------------------
+The USB opening defaults to 16.0 x 10.0 mm plus 0.8 mm modeled clearance. USB plug housings vary substantially. Measure the actual plug that must pass through the enclosure before final printing and adjust usb_entry_w / usb_entry_h / usb_entry_clearance in alarm_case.scad if necessary.

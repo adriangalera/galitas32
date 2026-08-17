@@ -1,83 +1,124 @@
-# Case design
+# Especificación completa para agente IA — Carcasa 3D para alarma ESP32-S3
 
-You are designing a **3D-printable enclosure for a DIY ESP32 home alarm system**. The final files will be imported into **Tinkercad** and printed on an **Artillery Genius** FDM printer.
+Diseña una **carcasa imprimible en 3D para un sistema de alarma doméstico DIY basado en ESP32-S3**, destinada a ser modificada posteriormente en **Tinkercad** e impresa mediante FDM en una **Artillery Genius**.
 
-The goal is to create a case that looks like a **commercial alarm/photo-detector**, not like a generic rectangular electronics project box.
+Estas instrucciones consolidan las decisiones de diseño tomadas hasta ahora. **No deben revertirse decisiones ya establecidas**, especialmente la posición inferior de los conectores, los buses verticales separados, el sistema de cámara y la entrada inferior del cable USB.
 
-## Overall appearance
+El objetivo no es simplemente producir STL visualmente correctos: el conjunto debe ser **mecánicamente montable, desmontable, imprimible y verificable**.
 
-Use the visual language of commercial wall-mounted alarm photo detectors such as the Securitas Direct/Verisure photo detector:
+---
 
-* Tall vertical enclosure
-* Approximately **190 mm tall × 74 mm wide × 44 mm deep**
-* Smooth rounded sides
-* Rounded top and bottom
-* Slightly convex/soft front profile
-* Minimal visible fasteners
-* Camera positioned in the upper portion
-* Clean consumer-product appearance
-* No visible ventilation grilles or exposed electronics on the front
+# 1. Objetivo estético
 
-Do not copy a commercial enclosure exactly. Use it only as design inspiration.
+La carcasa debe parecer un **detector fotográfico de alarma comercial montado en pared**, no una caja rectangular genérica para proyectos Arduino.
 
-The case consists primarily of:
+Puede utilizarse como inspiración general el lenguaje visual de detectores fotográficos de sistemas como Verisure/Securitas Direct, pero **sin copiar exactamente ningún producto comercial**.
 
-1. Front shell
-2. Rear shell
-3. Adjustable camera cradle
-4. Modular Dupont connector inserts
+Dimensiones exteriores objetivo aproximadas:
 
-No separate decorative camera bezel is required.
+* Alto: **190 mm**
+* Ancho: **74 mm**
+* Profundidad: **44 mm**
 
-## Front and rear enclosure
+Características visuales:
 
-Design the enclosure as two removable halves.
+* Formato vertical
+* Laterales redondeados
+* Parte superior redondeada
+* Parte inferior redondeada
+* Frontal ligeramente convexo/suavizado
+* Superficies exteriores limpias
+* Cámara en la zona superior
+* Sin electrónica visible
+* Sin rejillas de ventilación visibles en el frontal
+* Sin tornillos visibles desde el frontal
+* Sin estructuras mecánicas sobresaliendo por la superficie frontal
 
-### Front shell
+Priorizar una apariencia de **producto de consumo terminado**.
 
-The front shell contains:
+---
 
-* Camera opening near the upper section
-* Camera mounting mechanism
-* Two upper hooks/clips that engage the rear shell
-* Two lower bosses for M3 heat-set inserts
-* Smooth exterior with no camera support structures protruding through the outer surface
+# 2. Componentes principales
 
-A previous design had camera-support geometry intersecting the outer front wall. This must **not happen**.
+El diseño debe incluir como mínimo:
 
-All camera brackets, pivot supports, slots, bosses, etc. must remain completely behind the inner surface of the enclosure.
+1. `front_shell.stl`
+2. `rear_shell.stl`
+3. `camera_cradle.stl`
+4. `dupont_insert_2pin.stl`
+5. `dupont_insert_3pin.stl`
+6. `dupont_insert_4pin.stl`
+7. `dupont_insert_6pin.stl`
 
-Only the intended camera aperture should penetrate the front.
+También es recomendable incluir:
 
-### Rear shell
+8. `dupont_insert_blank.stl`
+9. `camera_angle_gauge.stl`
 
-The rear shell should be mostly solid.
+Debe entregarse además el archivo paramétrico:
 
-Do **not** create a large rectangular access opening.
+`alarm_case.scad`
 
-It contains:
+---
 
-* Matching receivers/catches for the two upper front-shell clips
-* Two recessed M3 screw holes near the lower portion
-* The M3 screws must pass through **solid plastic**
-* Modular Dupont connector bays
-* Wall-mounting provisions
-* Any necessary cable-management features
+# 3. Arquitectura frontal/trasera
 
-The front and rear closure works like this:
+La carcasa se divide en dos piezas principales:
 
-1. Engage the two front hooks with the corresponding rear catches.
-2. Swing the front shell closed.
-3. Insert two M3 screws from the rear/bottom.
-4. The screws engage M3 heat-set inserts installed in the front-shell bosses.
+* Frontal desmontable
+* Trasera fija
 
-The screw heads must not be visible from the front.
+La arquitectura de mantenimiento debe permitir que **la trasera permanezca montada en la pared al abrir la alarma**.
 
-The upper clips and rear catches must actually overlap across the front/rear seam. Do not merely put decorative hooks near each other.
+La mayor parte de la electrónica debe permanecer en la trasera:
 
-## Heat-set inserts
+* ESP32-S3
+* Buses +5 V y GND
+* Conectores Dupont
+* Cableado de periféricos
+* Electrónica auxiliar
+* Driver/MOSFET de sirena
 
-The user already owns a kit containing:
+El frontal debe contener principalmente:
+
+* Cámara
+* Cradle de cámara
+* Mecanismo de ajuste
+
+Idealmente, el único enlace eléctrico que debe permanecer entre frontal y trasera al abrir la caja es el **ribbon de la OV2640**.
+
+---
+
+# 4. Sistema de cierre
+
+La carcasa debe cerrarse mediante:
+
+* Dos ganchos superiores
+* Dos tornillos M3 inferiores
+
+Procedimiento:
+
+1. Introducir los dos ganchos superiores del frontal en los catches de la trasera.
+2. Girar/bascular el frontal hacia la posición cerrada.
+3. Introducir dos tornillos M3 desde la parte trasera/inferior.
+4. Los tornillos roscan en insertos térmicos M3 instalados en bosses del frontal.
+
+Los ganchos deben **solaparse físicamente** con los catches.
+
+No crear ganchos puramente decorativos que solamente queden cerca de los receptores.
+
+Los tornillos M3 deben:
+
+* Atravesar plástico sólido de la trasera
+* Estar alineados con los bosses del frontal
+* Tener las cabezas recesadas
+* No ser visibles desde el frontal
+
+---
+
+# 5. Insertos térmicos
+
+El usuario dispone de insertos térmicos:
 
 * M2
 * M2.5
@@ -86,162 +127,1206 @@ The user already owns a kit containing:
 * M5
 * M6
 
-heat-set brass threaded inserts.
+Usar:
 
-Use:
+* **M3 para el cierre principal**
+* **M2.5 para el mecanismo ajustable de cámara**
 
-* **M3 inserts for the main enclosure closure**
-* **M2.5 hardware for the adjustable camera mechanism**
+No asumir que el diámetro nominal del inserto es el diámetro correcto del agujero impreso.
 
-The model should have sensible pilot holes for heat-set inserts but avoid assuming that nominal insert OD equals pilot-hole diameter. Leave dimensions easy to modify.
+Parametrizar explícitamente:
 
-## Electronics
+* `m3_clearance`
+* `m3_insert_pilot`
+* `m25_clearance`
+* `m25_insert_pilot`, si se utiliza inserto en el mecanismo
 
-The main controller is an:
+---
 
-**ESP32-S3 WROOM N16R8 camera development board with OV2640**
+# 6. Frontal
 
-Approximate PCB dimensions:
+El frontal debe incluir:
+
+* Apertura de cámara
+* Dos ganchos superiores
+* Dos bosses inferiores para M3
+* Soportes internos de cámara
+
+La superficie exterior debe permanecer limpia.
+
+## Restricción crítica
+
+**Ninguna geometría de soporte de cámara puede atravesar la superficie exterior frontal.**
+
+Esto incluye:
+
+* Pivot supports
+* Bosses
+* Brackets
+* Locking slot
+* Refuerzos
+* Orejetas
+* Tornillos
+
+Todos deben permanecer detrás de la superficie interior.
+
+La única penetración relacionada con la cámara será la **apertura óptica**.
+
+---
+
+# 7. Cámara OV2640
+
+La cámara es una **OV2640** conectada mediante ribbon al ESP32-S3.
+
+Debe apuntar hacia abajo porque el dispositivo estará instalado verticalmente en una pared.
+
+Rango de ajuste:
+
+* **10° downward mínimo**
+* **20° downward posición nominal**
+* **35° downward máximo**
+
+El cradle debe poder detenerse en cualquier posición razonable dentro de ese intervalo mediante un tornillo de bloqueo.
+
+---
+
+# 8. Pivote de cámara
+
+Utilizar un eje horizontal.
+
+Debe existir:
+
+* Soporte fijo izquierdo
+* Cradle
+* Soporte fijo derecho
+
+Un tornillo/eje **M2.5** debe poder atravesar físicamente:
+
+```text
+soporte izquierdo
+       ↓
+     cradle
+       ↓
+soporte derecho
+```
+
+Los tres agujeros deben ser:
+
+* Coaxiales
+* Correctamente alineados
+* Con holgura adecuada
+
+No diseñar dos pivotes independientes que no compartan exactamente el mismo eje.
+
+---
+
+# 9. Bloqueo angular
+
+El sistema de bloqueo debe existir en **un solo lateral**.
+
+Utilizar:
+
+* Slot curvo
+* Tornillo M2.5
+
+El lateral opuesto debe ser únicamente pivote.
+
+No crear dos slots de bloqueo.
+
+El slot debe:
+
+* Tener el mismo centro geométrico que el pivote
+* Seguir correctamente la dirección real de rotación
+* Cubrir aproximadamente 10°–35°
+* Tener suficiente material alrededor
+
+---
+
+# 10. Apertura óptica
+
+No utilizar un túnel circular estrecho.
+
+La abertura debe admitir el campo de visión de la cámara en todo el rango de movimiento.
+
+Puede ser:
+
+* Verticalmente alargada
+* Ovalada
+* Chamfered internamente
+* Recesada
+
+Debe comprobarse como mínimo a:
+
+* 10°
+* 15°
+* 20°
+* 25°
+* 30°
+* 35°
+
+---
+
+# 11. Ribbon OV2640
+
+Debe existir una ruta realista para el ribbon.
+
+No debe:
+
+* Pasar por el eje del pivote
+* Ser pinzado al cerrar la carcasa
+* Rozar aristas afiladas
+* Interferir con el tornillo de bloqueo
+* Quedar excesivamente doblado
+* Impedir el movimiento del cradle
+
+Dejar suficiente volumen detrás/debajo de la cámara para formar una curva suave.
+
+---
+
+# 12. ESP32-S3
+
+Controlador:
+
+**ESP32-S3 WROOM N16R8 camera development board con OV2640**
+
+Dimensiones aproximadas del PCB:
 
 **57.1 × 28.2 mm**
 
-Provide enough internal room for:
+No diseñar un pocket de fricción exacta.
 
-* The ESP32-S3 board
-* GPIO/Dupont connections on the headers
-* OV2640 ribbon cable
-* microSD access/clearance
-* USB-C connector clearance
-* Internal wiring
-* 5 V distribution wiring
+Añadir holgura para:
 
-Do not trap the ESP32 permanently in the enclosure.
+* PCB
+* Pines
+* Headers
+* Dupont
+* USB-C
+* microSD
+* Ribbon
+* Cableado
 
-Use removable supports, rails, clips, or mounting posts.
+---
 
-Allow some extra PCB clearance instead of designing an exact friction-fit pocket.
+# 13. Cradle del ESP32
 
-The case might have enough space to hold the buzzer: **SFM-27** which aprox dimension: 30x15 mm
+La placa debe estar montada en la **trasera**.
 
-## Adjustable OV2640 camera
+Utilizar un sistema desmontable mediante:
 
-The OV2640 camera must have its own internal cradle.
+* Rails
+* Clips
+* Posts
+* Retenedores equivalentes
 
-The camera needs to point **downward**, because the alarm will be mounted on a wall.
+El cradle central utilizado hasta ahora es conceptualmente válido.
 
-Required adjustment range:
+La placa debe poder retirarse para mantenimiento.
 
-**approximately 10° to 35° downward**
+No atraparla permanentemente entre estructuras impresas.
 
-A good normal position is around **20° downward**.
+---
 
-### Camera aperture
+# 14. Acceso USB-C y microSD del ESP32
 
-The front camera opening must accommodate the tilted camera.
+Aunque exista una entrada independiente para alimentación general, debe mantenerse espacio para acceder al:
 
-Do not use a very tight circular tunnel that clips the field of view.
+* USB-C del ESP32
+* microSD
 
-Make the aperture sufficiently tall or internally chamfered/recessed to accommodate the 10°–35° tilt range.
+Verificar físicamente que:
 
-## Dupont connector system
+* Puede conectarse un cable USB-C
+* Los buses no bloquean el conector
+* Los Dupont no bloquean el conector
+* La placa puede retirarse
+* La microSD tiene espacio razonable para inserción/extracción
 
-The user does not want to buy new external connectors.
+---
 
-They already have many standard Dupont wires and want to use them for quick disconnects.
+# 15. Organización general de la trasera
 
-Use standard **2.54 mm pitch** Dupont/header geometry.
+La distribución preferida de arriba hacia abajo es:
 
-The enclosure must contain interchangeable connector bays rather than one generic cable opening.
+```text
+┌─────────────────────────────┐
+│     CATCHES / WALL MOUNT    │
+│                             │
+│        ZONA CÁMARA          │
+│                             │
+│ +5V       ESP32       GND   │
+│  ║          │          ║    │
+│  ║          │          ║    │
+│  ║          │          ║    │
+│  ║                     ║    │
+│                             │
+│    ZONA AUXILIAR/BUZZER     │
+│                             │
+│ [BAY] [BAY] [BAY] [BAY]    │
+│                             │
+│ M3      USB POWER      M3   │
+└────────────┬────────────────┘
+             │
+             ▼
+          cable USB
+```
 
-Create separate removable inserts for:
+La representación es conceptual y puede ajustarse para evitar interferencias.
 
-* 2-pin
-* 3-pin
-* 4-pin
-* 6-pin
+---
 
-These should allow ordinary male 2.54 mm header pins to be mounted so female Dupont connectors can plug into them externally.
+# 16. Eliminar elementos innecesarios
 
-Likely assignments:
+No volver a introducir las protuberancias extrañas presentes en versiones iniciales.
 
-* LED strip: 3 or 4 pin
-* RFID/SPI: up to 6 pin
+Evitar:
 
-The inserts must be mechanically retained so unplugging a Dupont cable does not push the header inside the enclosure.
+* Cable loops laterales voluminosos
+* Shelves arbitrarios
+* Bosses sin función
+* Soportes decorativos
+* Estructuras laterales innecesarias
+* Grandes bandejas dedicadas a un único componente
 
-Keep the system modular so the inserts can be rearranged/replaced.
+Mantener el interior limpio.
 
-## Internal wiring considerations
+---
 
-There should be space for an internal 5 V and GND distribution system.
+# 17. Alimentación general
 
-Do not assume all peripheral current passes through the ESP32 board.
+El sistema utilizará **5 V**.
 
-Allow room for:
+No asumir que toda la corriente de los periféricos debe circular a través del ESP32.
 
-* 5 V distribution
-* Ground distribution
-* MOSFET/transistor circuitry for the siren if needed
-* RFID wiring
-* LED wiring
+Arquitectura:
 
-## Tinkercad compatibility
+```text
+              ENTRADA 5 V
+                  │
+          ┌───────┴───────┐
+          │               │
+       BUS +5V         BUS GND
+          │               │
+    ┌─────┼─────┐    ┌────┼─────┐
+    │     │     │    │    │     │
+ ESP32  RFID   LED  ESP32 RFID  LED
+          │               │
+       DRIVER          SIRENA
+```
 
-The user will modify the design in **Tinkercad**.
+El ESP32 es una rama de alimentación más.
 
-Therefore:
+---
 
-* Export each meaningful component as a separate STL.
-* Avoid unnecessarily complex assemblies.
-* Use clean manifold geometry.
-* STL scale must import correctly at **100%**.
-* Keep individual components easy to position and edit.
+# 18. Sirena
 
-Also provide the parametric source file, preferably:
+La corriente de una sirena no debe ser suministrada directamente por un GPIO.
 
-* `alarm_case.scad`
+Utilizar:
 
-Package everything into:
+* MOSFET
+* Transistor
+* Driver equivalente
 
-* `alarm_case_bundle.zip`
+El GPIO solamente proporciona la señal de control.
 
-## Printability
+Debe existir espacio interior para este pequeño circuito.
 
-Design for FDM printing using approximately:
+---
 
-* 0.4 mm nozzle
-* 0.2 mm layer height
-* PLA or PETG
+# 19. Buses de alimentación
 
-Prefer geometry that requires minimal support.
+La trasera debe incorporar soportes para dos buses independientes:
 
-PETG may be used for clips, so the snap features should be printable and reasonably durable.
+* `+5V`
+* `GND`
 
-Avoid extremely thin clip arms or fragile details.
+Los buses deben estar dispuestos **verticalmente**.
 
-## Geometry checks before delivering
+Configuración consolidada:
 
-Before exporting the final bundle, explicitly verify all of the following:
+* `+5V` en el lateral interior izquierdo
+* `GND` en el lateral interior derecho
 
-* Front STL is watertight/manifold.
-* Rear STL is watertight/manifold.
-* Camera cradle is watertight/manifold.
-* Dupont inserts are watertight/manifold.
-* No internal camera bracket protrudes through the external front surface.
-* Both pivot-support sides have correctly aligned coaxial holes.
-* The M2.5 pivot bolt can physically pass through both supports and the cradle.
-* The locking screw and curved slot are on only one side.
-* The camera cradle can actually rotate through approximately 10°–35°.
-* The camera cradle does not collide with the front shell throughout its adjustment range.
-* The ribbon cable has a plausible path without being pinched.
-* The camera aperture does not obstruct the camera when tilted.
-* Front upper hooks actually engage rear catches.
-* Rear M3 holes pass through solid rear-shell material.
-* M3 holes align with the corresponding heat-set insert bosses.
-* Dupont bays do not interfere with the M3 screws, clips, PCB, or camera.
-* The angle gauge physically fits inside the intended free space.
-* All parts fit within an Artillery Genius print bed.
+No colocar ambos buses juntos.
 
-Do not merely generate the STLs and assume the pieces fit. Perform geometric/interference checks on the complete assembled model before delivering the files.
+---
 
-The priority is a **clean commercial-looking alarm enclosure that is serviceable, mechanically understandable, Tinkercad-friendly, and actually printable**, rather than a typical rectangular hobby electronics box.
+# 20. Separación física de buses
+
+Separarlos tanto como sea razonable dentro de la carcasa.
+
+Objetivo aproximado:
+
+**55–60 mm entre ejes**, si la geometría lo permite.
+
+La razón principal es mecánica y de seguridad:
+
+* Evitar puentes de estaño
+* Evitar cortos accidentales
+* Evitar tocar simultáneamente ambos buses con herramientas
+* Facilitar soldadura y mantenimiento
+
+---
+
+# 21. Orientación vertical
+
+No colocar los buses horizontalmente.
+
+Aprovechar la altura de aproximadamente 190 mm.
+
+Conceptualmente:
+
+```text
++5V                          GND
+ ║                            ║
+ ╠── ESP32 5V        ESP32 ───╣
+ ║                            ║
+ ╠── RFID 5V          RFID ───╣
+ ║                            ║
+ ╠── LED 5V            LED ───╣
+ ║                            ║
+ ╠── DRIVER          DRIVER ───╣
+ ║                            ║
+ ╚── etc.              etc. ───╣
+```
+
+Las señales pueden circular principalmente por la zona central.
+
+---
+
+# 22. Material de los buses
+
+Los buses pueden realizarse mediante:
+
+* Hilo de cobre rígido
+* Barra fina de cobre
+* Conductor rígido equivalente
+
+No aplicar estaño directamente sobre la pared de PLA/PETG.
+
+El plástico solamente debe proporcionar **soporte mecánico y aislamiento**.
+
+---
+
+# 23. Clips para buses
+
+Crear pequeños clips integrados en la trasera.
+
+Características:
+
+* Aproximadamente 4–6 clips por bus
+* Distribuidos verticalmente
+* Separación aproximada 20–30 mm
+* Apertura hacia el **centro de la carcasa**
+
+La apertura hacia el centro permite colocar el conductor lateralmente:
+
+```text
+PARED             INTERIOR
+
+│   ┌──
+│   │ ●  ← cobre
+│   └──
+│
+```
+
+No utilizar una sucesión de agujeros cerrados que obligue a introducir el conductor longitudinalmente.
+
+---
+
+# 24. Parámetros del bus
+
+Parametrizar:
+
+* `bus_wire_diameter`
+* `bus_wire_clearance`
+* `bus_clip_spacing`
+* `bus_left_position`
+* `bus_right_position`
+* `bus_start_height`
+* `bus_end_height`
+
+Valor inicial orientativo:
+
+`bus_wire_diameter = 1.6 mm`
+
+El usuario deberá poder cambiarlo después de medir el conductor real.
+
+---
+
+# 25. Longitud de los buses
+
+No extenderlos hasta la parte superior de la carcasa si no es necesario.
+
+Deben:
+
+* Comenzar debajo de la zona de cámara
+* Recorrer la zona útil de electrónica
+* Terminar antes de la zona inferior donde puedan interferir con Dupont, USB o M3
+
+---
+
+# 26. Kit Dupont disponible
+
+El usuario dispone de un kit estándar Dupont de **2.54 mm** que permite fabricar conectores mediante crimpado.
+
+Dispone de:
+
+* Terminales macho
+* Terminales hembra
+* Carcasas multipin
+
+Por tanto, aprovechar **conectores Dupont eléctricos reales**.
+
+---
+
+# 27. Arquitectura de conectores externos
+
+La solución preferida es:
+
+### Periférico
+
+Cable terminado en **conector Dupont macho multipin**.
+
+### Carcasa
+
+Conector **Dupont hembra multipin** sujeto mecánicamente mediante un insert impreso.
+
+Conceptualmente:
+
+```text
+EXTERIOR                   INTERIOR
+
+Periférico
+    │
+┌───────────┐
+│ DUPONT    │
+│ MACHO     │
+└──●─●─●────┘
+   ↓ ↓ ↓
+┌──○─○─○────┐
+│ DUPONT    │
+│ HEMBRA    │
+└───────────┘
+█████████████ ← insert/retención impresa
+    │ │ │
+    │ │ └── señal
+    │ └──── GND
+    └────── +5V
+```
+
+---
+
+# 28. Función del insert Dupont
+
+El plástico impreso **no sustituye el conector Dupont**.
+
+Su función es exclusivamente:
+
+* Sujetar la carcasa Dupont hembra
+* Evitar que se introduzca hacia dentro
+* Evitar que salga hacia fuera
+* Resistir las fuerzas de conexión/desconexión
+
+Debe poder retirarse durante mantenimiento.
+
+---
+
+# 29. Inserts Dupont requeridos
+
+Crear:
+
+* 2P
+* 3P
+* 4P
+* 6P
+
+También es recomendable:
+
+* Insert ciego
+
+---
+
+# 30. Bahías modulares
+
+Preferir varias bahías con **geometría externa común**.
+
+Cada bahía debería poder recibir distintos inserts.
+
+Por ejemplo:
+
+```text
+[BAY 1] [BAY 2] [BAY 3] [BAY 4]
+```
+
+y cada una podría utilizar:
+
+* 2P
+* 3P
+* 4P
+* 6P
+* Blank
+
+si la solución mecánica lo permite.
+
+---
+
+# 31. Ubicación de Dupont
+
+Esta decisión es obligatoria:
+
+**Todos los conectores Dupont externos deben encontrarse en la parte inferior de la trasera.**
+
+No colocarlos:
+
+* Junto al ESP32
+* En mitad de la carcasa
+* En la zona superior
+* Dispersos por los laterales
+
+Los cables externos deben poder salir naturalmente hacia abajo.
+
+---
+
+# 32. Cableado de Dupont
+
+Ejemplo RFID 6P:
+
+```text
++5V  ─────────► BUS +5V
+GND  ─────────► BUS GND
+SCK  ─────────► ESP32
+MOSI ─────────► ESP32
+MISO ─────────► ESP32
+CS   ─────────► ESP32
+```
+
+Los conductores de alimentación se dirigen a los laterales.
+
+Las señales pueden subir por la zona central.
+
+---
+
+# 33. Entrada USB de alimentación
+
+Debe existir una abertura específica para introducir desde el exterior el **cable USB utilizado como alimentación principal de 5 V**.
+
+Esta entrada es independiente de:
+
+* Los conectores Dupont
+* El USB-C de programación del ESP32
+
+---
+
+# 34. Posición del USB de alimentación
+
+Situar la entrada en la **parte inferior**, preferiblemente centrada aproximadamente entre los dos tornillos M3 cuando la geometría lo permita.
+
+Conceptualmente:
+
+```text
+│ [DUPONT] [DUPONT] [DUPONT] │
+│                             │
+│ M3      USB POWER       M3  │
+└────────────┬────────────────┘
+             │
+             ▼
+           cable
+```
+
+El cable debe salir naturalmente hacia abajo.
+
+---
+
+# 35. Apertura USB
+
+La abertura debe permitir introducir **la cabeza completa del conector USB**, no únicamente el diámetro del cable.
+
+Valor inicial orientativo utilizado:
+
+* Ancho: aproximadamente **16 mm**
+* Alto: aproximadamente **10 mm**
+* Holgura adicional: aproximadamente **0.8 mm**
+
+Estos valores **no son definitivos**.
+
+Deben quedar parametrizados porque el usuario medirá posteriormente su cable real.
+
+Crear:
+
+* `usb_cable_hole_width`
+* `usb_cable_hole_height`
+* `usb_cable_clearance`
+* `usb_cable_hole_position`
+
+---
+
+# 36. Forma de la entrada USB
+
+Preferir una abertura/muesca accesible desde la parte inferior en lugar de un simple agujero circular.
+
+La sustitución del cable debe ser sencilla.
+
+Evitar obligar al usuario a:
+
+* Cortar el cable
+* Desoldarlo para retirarlo
+* Desmontar innecesariamente toda la electrónica
+
+---
+
+# 37. Strain relief USB
+
+Incorporar alivio de tensión interior.
+
+Solución preferida:
+
+**dos pequeños puntos/loops/posts para una brida**.
+
+La brida debe sujetar el cable después de entrar en la carcasa.
+
+Así:
+
+```text
+exterior
+   │
+   │ cable
+   ▼
+[entrada USB]
+   │
+   ├────(brida)────┐
+   │               │
+   └───────────────┘
+         │
+         ├── +5V → bus +5V
+         └── GND → bus GND
+```
+
+Un tirón exterior no debe transmitirse directamente a las soldaduras.
+
+---
+
+# 38. Entrada USB vs USB-C ESP32
+
+Distinguir claramente:
+
+### Entrada USB principal
+
+Proporciona alimentación general de 5 V al sistema.
+
+### USB-C ESP32
+
+Se utiliza para:
+
+* Programación
+* Depuración
+* Alimentación alternativa cuando proceda
+
+El diseño no debe confundir ambos.
+
+---
+
+# 39. Buzzer SFM-27
+
+Debe reservarse espacio para un buzzer aproximadamente:
+
+**SFM-27, ~30 × 15 mm**
+
+No utilizar únicamente sus dimensiones nominales.
+
+Reservar un volumen aproximado de al menos:
+
+**35 × 20 × 20 mm**
+
+para incluir:
+
+* Cuerpo
+* Terminales
+* Soldaduras
+* Cables
+* Holgura de montaje
+
+---
+
+# 40. Posición del buzzer
+
+Preferir una zona libre:
+
+* Entre cámara y ESP32, si existe suficiente profundidad
+* O en otra zona interna libre que no interfiera con los buses
+
+No bloquear:
+
+* Cámara
+* Ribbon
+* ESP32
+* USB-C
+* microSD
+* Dupont
+* Buses
+
+---
+
+# 41. Retención del buzzer
+
+No volver a crear una gran bandeja/shelf como en diseños anteriores.
+
+Si se proporciona retención específica, utilizar algo mínimo:
+
+* 2–3 pequeños clips
+* Topes
+* Clip + tope
+* Sistema equivalente
+
+El buzzer debe ser **desmontable**.
+
+No pegarlo permanentemente ni atraparlo entre las dos mitades.
+
+---
+
+# 42. Validación específica del buzzer
+
+Antes de finalizar, comprobar con un volumen de referencia de al menos:
+
+**35 × 20 × 20 mm**
+
+que:
+
+* Cabe dentro de la carcasa cerrada
+* No toca el frontal
+* No toca la cámara
+* No limita el ajuste 10°–35°
+* No pinza el ribbon
+* No interfiere con ESP32
+* No bloquea USB-C
+* No bloquea microSD
+* No toca los buses
+* Sus cables tienen una ruta plausible
+
+No declarar simplemente que “hay espacio” basándose en observación visual.
+
+---
+
+# 43. Montaje en pared
+
+Usar un sistema sencillo.
+
+Preferido:
+
+* Keyhole superior
+* Agujero secundario pequeño antirotación
+
+Evitar grandes brackets externos.
+
+Debe ser compatible con mantener la trasera instalada mientras se abre el frontal.
+
+---
+
+# 44. Printabilidad
+
+Diseñar para aproximadamente:
+
+* Boquilla: **0.4 mm**
+* Layer height: **0.2 mm**
+* Material: PLA o PETG
+
+PETG puede utilizarse especialmente para:
+
+* Ganchos
+* Clips
+* Retenedores Dupont
+* Clips de buses
+
+Evitar:
+
+* Paredes extremadamente finas
+* Clips frágiles
+* Overhangs innecesarios
+* Soportes de impresión excesivos
+* Geometría interna imposible de imprimir
+
+---
+
+# 45. Compatibilidad Tinkercad
+
+Todos los STL deben:
+
+* Utilizar mm
+* Importar a escala **100 %**
+* Tener geometría limpia
+* Ser manifold
+* Ser watertight
+* Evitar polygon counts absurdamente altos
+* Poder posicionarse fácilmente
+* Estar separados por componente funcional
+
+No crear una única STL con todo el conjunto fusionado.
+
+---
+
+# 46. Parametrización OpenSCAD
+
+Entregar:
+
+`alarm_case.scad`
+
+Los parámetros principales deben estar agrupados al comienzo del archivo.
+
+Como mínimo:
+
+```text
+case_height
+case_width
+case_depth
+wall_thickness
+
+m3_clearance
+m3_insert_pilot
+
+m25_clearance
+m25_insert_pilot
+
+camera_min_angle
+camera_nominal_angle
+camera_max_angle
+
+camera_pivot_x
+camera_pivot_y
+camera_pivot_z
+
+camera_aperture_width
+camera_aperture_height
+
+pcb_width
+pcb_height
+pcb_clearance
+
+dupont_pitch
+dupont_fit_clearance
+dupont_bay_width
+dupont_bay_height
+
+bus_wire_diameter
+bus_wire_clearance
+bus_clip_spacing
+bus_left_position
+bus_right_position
+bus_start_height
+bus_end_height
+
+usb_cable_hole_width
+usb_cable_hole_height
+usb_cable_clearance
+usb_cable_hole_position
+
+buzzer_width
+buzzer_height
+buzzer_depth
+buzzer_clearance
+
+clip_clearance
+```
+
+No esconder dimensiones críticas dentro de módulos difíciles de encontrar.
+
+---
+
+# 47. Validación de la cámara
+
+Comprobar el conjunto ensamblado a:
+
+* 10°
+* 15°
+* 20°
+* 25°
+* 30°
+* 35°
+
+En cada posición verificar:
+
+* Cradle vs frontal
+* Cámara vs frontal
+* Apertura óptica
+* Ribbon
+* Tornillo de bloqueo
+* Buzzer
+* Otros elementos internos
+
+---
+
+# 48. Validación del pivote
+
+Comprobar explícitamente:
+
+* Coaxialidad
+* Diámetro de paso
+* M2.5 atravesando ambos soportes
+* M2.5 atravesando cradle
+* Ausencia de plástico bloqueando el eje
+
+No inferirlo solamente de las coordenadas CAD.
+
+---
+
+# 49. Validación del cierre
+
+Comprobar:
+
+* Enganche físico de ambos hooks
+* Profundidad de solape
+* Ausencia de interferencia de shells
+* Alineación de ambos M3
+* Agujeros M3 atravesando material sólido
+* Bosses correctamente posicionados
+* Acceso de herramienta a las cabezas
+
+---
+
+# 50. Validación Dupont
+
+Comprobar:
+
+* Inserts caben en sus bays
+* No pueden empujarse hacia dentro al conectar
+* No salen al desconectar
+* Hay espacio para el conector macho externo
+* El cable puede salir hacia abajo
+* No interfieren con M3
+* No interfieren con USB power
+* No bloquean PCB
+* No bloquean buses
+
+---
+
+# 51. Validación de buses
+
+Comprobar:
+
+* Bus +5 V cabe
+* Bus GND cabe
+* Separación física suficiente
+* Clips imprimibles
+* Conductor insertable lateralmente
+* Conductor extraíble
+* Acceso con soldador razonable
+* No interferencia con ESP32
+* No interferencia con buzzer
+* No interferencia con Dupont
+* No interferencia con USB-C
+* No interferencia con microSD
+* No interferencia con cámara
+
+---
+
+# 52. Validación USB power
+
+Comprobar:
+
+* La cabeza del conector objetivo atraviesa la abertura
+* El cable sale hacia abajo
+* No existe radio de curvatura excesivamente pequeño
+* Existe espacio para la brida
+* La brida puede instalarse
+* El cable no queda pinzado por el frontal
+* No debilita excesivamente la zona de M3
+* Puede sustituirse
+* No interfiere con Dupont
+
+---
+
+# 53. Validación de malla
+
+Para cada STL comprobar:
+
+* Watertight
+* Manifold
+* Winding consistente
+* Ausencia de caras degeneradas relevantes
+* Ausencia de geometrías flotantes
+* Una sola pieza conectada cuando corresponda
+
+Especialmente:
+
+* Front
+* Rear
+* Camera cradle
+* Cada Dupont insert
+* Blank insert
+* Gauge
+
+---
+
+# 54. Cama de impresión
+
+Comprobar que cada componente individual cabe en la cama de una **Artillery Genius**.
+
+No asumirlo únicamente por las dimensiones nominales exteriores.
+
+Considerar orientación real de impresión.
+
+---
+
+# 55. Informe de validación
+
+Entregar un:
+
+`validation_report.txt`
+
+o equivalente.
+
+No escribir únicamente:
+
+`Validation passed`
+
+Debe detallar qué se comprobó.
+
+Ejemplo:
+
+```text
+Rear shell:
+- Watertight: PASS
+- Manifold: PASS
+- Connected components: 1
+- USB opening clearance: PASS
+- Bus clips: PASS
+
+Camera:
+- 10 deg: PASS
+- 15 deg: PASS
+- 20 deg: PASS
+- 25 deg: PASS
+- 30 deg: PASS
+- 35 deg: PASS
+
+Buzzer envelope 35x20x20:
+- Front collision: PASS
+- Camera collision: PASS
+- PCB collision: PASS
+...
+```
+
+---
+
+# 56. README
+
+Incluir un `README.md` explicando:
+
+* Qué archivo es cada pieza
+* Orientación recomendada de impresión
+* Hardware necesario
+* M3 utilizados
+* M2.5 utilizados
+* Cómo instalar insertos térmicos
+* Cómo montar la cámara
+* Cómo montar los Dupont
+* Cómo instalar los buses
+* Cómo sujetar el cable USB
+* Cómo montar el buzzer
+* Orden de montaje de la carcasa
+
+---
+
+# 57. Bundle final
+
+Empaquetar todo en:
+
+`alarm_case_bundle.zip`
+
+Debe contener como mínimo:
+
+```text
+alarm_case.scad
+
+front_shell.stl
+rear_shell.stl
+camera_cradle.stl
+
+dupont_insert_2pin.stl
+dupont_insert_3pin.stl
+dupont_insert_4pin.stl
+dupont_insert_6pin.stl
+
+README.md
+validation_report.txt
+```
+
+Opcional/recomendado:
+
+```text
+dupont_insert_blank.stl
+camera_angle_gauge.stl
+```
+
+---
+
+# 58. Decisiones consolidadas que NO deben revertirse
+
+Las siguientes decisiones proceden de iteraciones anteriores y deben considerarse requisitos:
+
+* Aspecto de detector de alarma comercial
+* Aproximadamente 190 × 74 × 44 mm
+* Dos shells
+* Frontal limpio
+* Cámara arriba
+* Cámara ajustable 10°–35°
+* Posición nominal ~20°
+* M2.5 para cámara
+* Un único locking slot lateral
+* Pivot holes coaxiales
+* M3 para cierre de carcasa
+* Dos hooks superiores funcionales
+* Dos M3 inferiores
+* ESP32 desmontable
+* ESP32 en la trasera
+* Sin gran abertura rectangular trasera
+* Sin extrañas protuberancias laterales
+* Sin cable loops voluminosos
+* Dupont agrupados abajo
+* Dupont eléctricos reales del kit
+* Inserts impresos únicamente como soporte mecánico
+* Buses de cobre independientes
+* Bus +5 V vertical en un lateral
+* Bus GND vertical en el lateral contrario
+* Máxima separación práctica entre buses
+* Clips de bus abiertos hacia el centro
+* Alimentación de periféricos directamente desde los buses cuando corresponda
+* No obligar a que toda la corriente atraviese el ESP32
+* Entrada independiente de cable USB de alimentación
+* Entrada USB en la zona inferior
+* Strain relief interno mediante brida o equivalente
+* Mantener acceso al USB-C del ESP32
+* Reservar espacio real para SFM-27
+* No utilizar una gran bandeja dedicada al buzzer
+* Buzzer desmontable
+* Reservar aproximadamente 35 × 20 × 20 mm para buzzer + conexiones
+* Validar todas las piezas antes de entregar
+
+---
+
+# Prioridad final
+
+El resultado debe ser una carcasa que tenga sentido tanto **cerrada como abierta**.
+
+Cerrada debe parecer un producto comercial.
+
+Abierta debe mostrar una arquitectura ordenada y fácil de mantener:
+
+```text
+          CÁMARA
+
++5V        ESP32         GND
+ ║           │            ║
+ ║       señales          ║
+ ║                        ║
+
+      BUZZER / DRIVER
+
+   DUPONT MODULARES
+
+M3      USB POWER       M3
+```
+
+No sacrificar la capacidad real de montaje por conseguir una geometría visualmente atractiva.
+
+**Antes de entregar cualquier STL, verificar el ensamblaje completo y las interferencias reales entre componentes.**
