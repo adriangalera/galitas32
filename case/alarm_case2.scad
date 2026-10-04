@@ -3,7 +3,7 @@
 // Designed for 0.4 mm nozzle / 0.2 mm layers, PLA or PETG.
 $fn = 48;
 
-PART = "rear"; // front, rear, pcb2, assembly, wall_assembly
+PART = "exploded"; // front, rear, wall_mount, pcb2, assembly, wall_assembly, exploded
 // Camera stays on the ESP32-S3-CAM board, facing -Y (USB connectors downward).
 // No independent camera tilt: the original short ribbon stays in its natural position.
 // The front cover must not pull, clamp or carry the camera when removed.
@@ -43,24 +43,56 @@ camera_preview_projection = 7;    // illustrative projection from PCB, not measu
 
 // ---------------- Fixed downward wall mount ----------------
 wall_tilt = 20;                   // degrees downward; change and reprint (10..35)
-wall_bottom_clearance = 5;         // clearance at the lowest rear corner
+screw_above_frame = 85;           // measured vertical screw-to-frame-top distance
+door_vertical_clearance = 85;     // frame top to door collision limit
+door_safety_clearance = 5;        // minimum reserved vertical gap above that limit
+frame_projection = 14;            // ASSUMED protrusion from wall; user described frame width
+frame_clearance = 4;              // allowance around the frame
+// Conservative bound keeps the complete case clear of the frame below the screw.
+wall_bottom_clearance = (frame_projection+frame_clearance)/cos(wall_tilt)+1;
 mount_rib_x = 30;
 mount_rib_t = 4;
-mount_z_min = -78;
 mount_z_max = 78;
 mount_plate_t = 4;
 mount_screw_shank_d = 4.5;         // clearance for a nominal 4 mm wall screw
 mount_screw_head_d = 9;            // entry clearance; head must be wider than shank slot
 mount_head_space = 4;             // free depth behind retaining plate
-mount_entry_z = 52;               // wall-frame coordinates
-mount_seat_z = 65;
+wall_plane_y = case_d/2 + case_h/2*tan(wall_tilt) + wall_bottom_clearance;
+// Position screw seat from the conservative bounding box of the tilted case.
+// This automatically raises the case enough to clear the door with margin.
+case_bottom_below_wall_origin = case_h/2*cos(wall_tilt)
+    + case_d/2*sin(wall_tilt) + wall_plane_y*sin(wall_tilt);
+mount_seat_z = screw_above_frame + door_vertical_clearance
+    - door_safety_clearance - case_bottom_below_wall_origin;
+mount_entry_z = mount_seat_z-13;   // entry below seat; lower case to lock
+mount_plate_z = mount_seat_z-3;
+frame_top_z = mount_seat_z-screw_above_frame; // wall-frame coordinates
+mount_pad_h = 12;
+mount_pad_z = frame_top_z+frame_clearance+mount_pad_h/2+1;
+mount_z_min = (mount_pad_z-8)*cos(wall_tilt)-10;
+
 // Wall plane in enclosure coordinates: y = wall_plane_y + z*tan(wall_tilt).
 // Thick end at TOP: rotation +wall_tilt about X points the camera DOWN.
-wall_plane_y = case_d/2 + case_h/2*tan(wall_tilt) + wall_bottom_clearance;
+
 // Mounting: insert screw head in the LOWER round opening, then lower the case.
 // Start with about 4.5 mm between wall and underside of screw head; adjust to fit.
 // The two lower pads may receive thin non-slip pads of equal thickness.
-// Integral mount: rear part may require slicer supports depending on orientation.
+// Mount prints separately; verify slicer support needs for the selected orientation.
+
+// ---------------- Separate mount / PLA weld joints ----------------
+joint_plane_y = case_d/2+4;        // mating plane; installed mount position unchanged
+joint_zs = [-20,60];              // four pads: two per side
+joint_w = 10;
+joint_h = 20;
+joint_bevel = 0.7;                // paired bevels form a perimeter welding groove
+joint_clearance = 0.25;           // socket clearance per side
+joint_pin_depth = 2.5;
+joint_screw_d = 3.4;              // two optional M3 through-bolts, upper pads only
+// Assemble dry: four rear pins into four blind mount sockets, faces seated.
+// Tack opposite corners, then fill exposed perimeter grooves with matching PLA.
+// Do not melt locating pins before alignment; allow the complete joint to cool.
+// Optional upper through-bolts use nuts inside the empty rear shell.
+// Select wall_mount for a separate part placed flat on its joint faces at Z=0.
 
 m3_screw_clearance = 3.4;
 m3_insert_pilot_d = 4.2;   // intentionally easy to tune for your actual heat-set insert
@@ -230,27 +262,81 @@ module wall_mount_rib(x) {
     translate([x-mount_rib_t/2,0,0])
         rotate([90,0,90]) linear_extrude(height=mount_rib_t)
             polygon(points=[
-                [case_d/2-1.5,mount_z_min],
+                [joint_plane_y+2.5,mount_z_min],
                 [wall_plane_y+mount_z_min*tan(wall_tilt)-2/cos(wall_tilt),mount_z_min],
                 [wall_plane_y+mount_z_max*tan(wall_tilt)-2/cos(wall_tilt),mount_z_max],
-                [case_d/2-1.5,mount_z_max]
+                [joint_plane_y+2.5,mount_z_max]
             ]);
+}
+
+// Bevel only exposed pad edges; broad central faces carry the mating load.
+module joint_pad(rear=true) {
+    if (rear) {
+        translate([0,(case_d/2-1.5+joint_plane_y-joint_bevel)/2,0])
+            cube([joint_w,joint_plane_y-joint_bevel-(case_d/2-1.5),joint_h],center=true);
+        hull() {
+            translate([0,joint_plane_y-joint_bevel+0.01,0])
+                cube([joint_w,0.02,joint_h],center=true);
+            translate([0,joint_plane_y-0.01,0])
+                cube([joint_w-2*joint_bevel,0.02,joint_h-2*joint_bevel],center=true);
+        }
+    } else {
+        hull() {
+            translate([0,joint_plane_y+0.01,0])
+                cube([joint_w-2*joint_bevel,0.02,joint_h-2*joint_bevel],center=true);
+            translate([0,joint_plane_y+joint_bevel-0.01,0])
+                cube([joint_w,0.02,joint_h],center=true);
+        }
+        translate([0,joint_plane_y+(joint_bevel+3)/2,0])
+            cube([joint_w,3-joint_bevel,joint_h],center=true);
+    }
+}
+module rear_joint_pads() {
+    for (x=[-mount_rib_x,mount_rib_x]) for (z=joint_zs)
+        translate([x,0,z]) {
+            joint_pad(true);
+            // Offset from optional screw; not a snap-fit or a substitute for welding.
+            translate([0,joint_plane_y+joint_pin_depth/2-0.1,-4])
+                cube([4,joint_pin_depth+0.2,5],center=true);
+        }
+}
+module mount_joint_pads() {
+    for (x=[-mount_rib_x,mount_rib_x]) for (z=joint_zs)
+        translate([x,0,z]) joint_pad(false);
+}
+module joint_sockets() {
+    for (x=[-mount_rib_x,mount_rib_x]) for (z=joint_zs)
+        translate([x,joint_plane_y+(joint_pin_depth+0.2)/2-0.05,z-4])
+            cube([4+2*joint_clearance,joint_pin_depth+0.3,5+2*joint_clearance],center=true);
+}
+module joint_bolt_holes() {
+    for (x=[-mount_rib_x,mount_rib_x])
+        translate([x,joint_plane_y,65]) hole_y(joint_screw_d,24);
 }
 
 module wall_mount() {
     difference() {
         union() {
             for (x=[-mount_rib_x,mount_rib_x]) wall_mount_rib(x);
+            mount_joint_pads();
             wall_frame() {
                 // Upper cross plate carries the single screw and joins both webs.
-                translate([0,-mount_plate_t/2,62])
+                translate([0,-mount_plate_t/2,mount_plate_z])
                     cube([68,mount_plate_t,34],center=true);
                 // Two spaced lower contact pads stabilize pitch and sideways rocking.
                 for (x=[-mount_rib_x,mount_rib_x])
-                    translate([x,-mount_plate_t/2,-72])
-                        cube([10,mount_plate_t,12],center=true);
+                    translate([x,-mount_plate_t/2,mount_pad_z])
+                        cube([10,mount_plate_t,mount_pad_h],center=true);
             }
         }
+        joint_sockets();
+        joint_bolt_holes();
+        // Remove the frame envelope plus clearance from all mounting webs.
+        // Treat everything below the frame top as occupied: no guessed frame height.
+        wall_frame()
+            translate([-case_w,-frame_projection-frame_clearance,
+                       frame_top_z+frame_clearance-500])
+                cube([2*case_w,frame_projection+frame_clearance+100,500]);
         wall_frame() {
             // Genuine gravity keyhole: large head-entry BELOW narrow shaft seat.
             translate([0,-mount_plate_t/2,mount_entry_z])
@@ -633,7 +719,7 @@ module rear_shell() {
     difference() {
         union() {
             rear_skin();
-            //wall_mount();
+            rear_joint_pads();
             rear_catches();
             rear_m3_pads();
             pcb_rails2();
@@ -641,6 +727,7 @@ module rear_shell() {
             usb_strain_relief_bridges();
         }
         rear_m3_holes();
+        joint_bolt_holes();
         usb_power_entry_cut();
         // Suspension is now in the external wedge, not through the rear skin.
         
@@ -681,18 +768,48 @@ module snap_tab(zsign=1) {
 module assembly() {
     color([0.8,0.8,0.8,0.35]) front_shell();
     color("lightgray") rear_shell();
+    color("steelblue") wall_mount();
     if ($preview && show_electronics) %electronics_reference();
 }
 
-// Installed view: wall is Y=0, room is negative Y; camera points down.
+// Installed view: screw seat at Z=0, wall Y=0, frame top Z=-85.
+// Reference wall/frame are preview-only and excluded from exported meshes.
+module installed_pose() {
+    translate([0,-wall_plane_y*cos(wall_tilt),
+               -wall_plane_y*sin(wall_tilt)-mount_seat_z])
+        rotate([wall_tilt,0,0]) children();
+}
 module wall_assembly() {
-    translate([0,-wall_plane_y*cos(wall_tilt),0])
-        rotate([wall_tilt,0,0]) assembly();
-    if ($preview) %color([0.7,0.65,0.6,0.3])
-        translate([0,2,0]) cube([120,4,260],center=true);
+    installed_pose() assembly();
+    if ($preview) {
+        %color([0.7,0.65,0.6,0.3])
+            translate([0,2,-80]) cube([120,4,320],center=true);
+        %color([0.65,0.35,0.15,0.6])
+            translate([-60,-frame_projection,-screw_above_frame-150])
+                cube([120,frame_projection,150]);
+        %color("silver") translate([0,-4,0]) hole_y(mount_screw_shank_d-0.5,10);
+        // Red reference plane: vertical collision limit supplied by the user.
+        %color([1,0.15,0.1,0.25])
+            translate([0,-55,-screw_above_frame-door_vertical_clearance])
+                cube([120,120,0.6],center=true);
+    }
+}
+
+module wall_mount_print() {
+    translate([0,0,-joint_plane_y]) rotate([90,0,0]) wall_mount();
+}
+module exploded() {
+    color("lightgray") rear_shell();
+    color("steelblue") translate([0,25,0]) wall_mount();
+    color("gainsboro") translate([0,-25,0]) front_shell();
 }
 
 // ---------------- Part selector ----------------
+assert(door_vertical_clearance > door_safety_clearance && door_safety_clearance >= 5,
+       "Reserve at least 5 mm of vertical door clearance");
+assert(mount_seat_z > 0, "Door clearance requires a different mounting layout");
+assert(screw_above_frame > 40, "Insufficient space above frame for this mount");
+assert(frame_projection >= 0 && frame_clearance > 0, "Invalid frame clearance");
 assert(wall_tilt >= 10 && wall_tilt <= 35, "Wall tilt must be 10..35 degrees downward");
 assert(mount_screw_head_d > mount_screw_shank_d+2, "Insufficient screw head retention");
 assert(camera_window_w < case_w-2*wall, "Camera window exceeds case width");
@@ -700,7 +817,9 @@ assert(abs(camera_z)+camera_window_h/2 < case_h/2-corner_r,
        "Camera window exceeds the straight front area");
 if (PART=="front") front_shell();
 else if (PART=="rear") rear_shell();
+else if (PART=="wall_mount") wall_mount_print();
+else if (PART=="exploded") exploded();
 else if (PART=="pcb2") pcb_rails2();
 else if (PART=="assembly") assembly();
 else if (PART=="wall_assembly") wall_assembly();
-else assert(false, "Use front, rear, pcb2, assembly or wall_assembly.");
+else assert(false, "Use front, rear, wall_mount, pcb2, assembly, wall_assembly or exploded.");
