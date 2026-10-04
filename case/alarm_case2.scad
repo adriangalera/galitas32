@@ -3,7 +3,12 @@
 // Designed for 0.4 mm nozzle / 0.2 mm layers, PLA or PETG.
 $fn = 48;
 
-PART = "rear"; // front, rear, camera_cradle, angle_gauge, assembly
+PART = "rear"; // front, rear, pcb2, assembly, wall_assembly
+// Camera stays on the ESP32-S3-CAM board, facing -Y (USB connectors downward).
+// No independent camera tilt: the original short ribbon stays in its natural position.
+// The front cover must not pull, clamp or carry the camera when removed.
+// Use the board's existing camera retention; this cover does not retain a loose sensor.
+// Photo-based optical alignment is provisional: check against the real board before printing.
 
 // ---------------- User-tunable parameters ----------------
 case_w = 74;
@@ -16,18 +21,46 @@ pcb_rail_y = 9.5;
 pcb_rail_depth = 25;
 seam_y = min(0, pcb_rail_y - pcb_rail_depth/2); // -3 mm; rear half depth = 25 mm
 
-camera_z = 48;
-camera_pivot_y = -5.8;
-camera_module_w = 24.5;    // generous OV2640 PCB envelope
-camera_module_h = 24.5;
-camera_cradle_w = 29.0;
-camera_cradle_h = 30.0;
-pivot_clearance_d = 2.9;   // M2.5 bolt clearance
-lock_clearance_d = 2.9;
-lock_radius = 10.5;
-cam_min_angle = 10;
-cam_nom_angle = 20;
-cam_max_angle = 35;
+// PCB reference matches the existing 60 mm rail channels, not a measured board.
+pcb_reference_w = 28;              // existing project value
+pcb_reference_h = 60;              // provisional occupied channel height
+pcb_reference_z = -3;
+pcb_slot_y_offset = -8.5;
+pcb_reference_y = pcb_rail_y + pcb_slot_y_offset;
+
+// Lens is over the upper portion of the PCB, as in the supplied photograph.
+// Estimated offset; change this value if the lens is higher/lower on your board.
+camera_from_pcb_top = 14;
+camera_x = 0;
+camera_z = pcb_reference_z + pcb_reference_h/2 - camera_from_pcb_top;
+// Broad, shallow window tolerates alignment uncertainty and lens setback.
+// Actual field of view still depends on the lens; no optical specification is assumed.
+camera_window_w = 40;
+camera_window_h = 40;
+camera_window_r = 4;
+show_electronics = true;            // assembly preview only, never exported to STL
+camera_preview_projection = 7;    // illustrative projection from PCB, not measured
+
+// ---------------- Fixed downward wall mount ----------------
+wall_tilt = 20;                   // degrees downward; change and reprint (10..35)
+wall_bottom_clearance = 5;         // clearance at the lowest rear corner
+mount_rib_x = 30;
+mount_rib_t = 4;
+mount_z_min = -78;
+mount_z_max = 78;
+mount_plate_t = 4;
+mount_screw_shank_d = 4.5;         // clearance for a nominal 4 mm wall screw
+mount_screw_head_d = 9;            // entry clearance; head must be wider than shank slot
+mount_head_space = 4;             // free depth behind retaining plate
+mount_entry_z = 52;               // wall-frame coordinates
+mount_seat_z = 65;
+// Wall plane in enclosure coordinates: y = wall_plane_y + z*tan(wall_tilt).
+// Thick end at TOP: rotation +wall_tilt about X points the camera DOWN.
+wall_plane_y = case_d/2 + case_h/2*tan(wall_tilt) + wall_bottom_clearance;
+// Mounting: insert screw head in the LOWER round opening, then lower the case.
+// Start with about 4.5 mm between wall and underside of screw head; adjust to fit.
+// The two lower pads may receive thin non-slip pads of equal thickness.
+// Integral mount: rear part may require slicer supports depending on orientation.
 
 m3_screw_clearance = 3.4;
 m3_insert_pilot_d = 4.2;   // intentionally easy to tune for your actual heat-set insert
@@ -115,48 +148,9 @@ module rear_skin() {
 
 // ---------------- Front shell internal mechanics ----------------
 module camera_aperture_cut() {
-    // Wide/tall rounded opening avoids a restrictive circular tunnel.
-    translate([0,-case_d/2+0.5,camera_z])
-        rounded_prism_y(22,8,42,3.5);
-}
-
-module arc_slot_x(r=lock_radius, a0=cam_min_angle, a1=cam_max_angle, d=3.2, len=8) {
-    // Slot lies in Y-Z plane, axis through X.
-    for (a=[a0:2:a1-2]) hull() {
-        translate([0, r*cos(a), r*sin(a)]) hole_x(d,len);
-        translate([0, r*cos(a+2), r*sin(a+2)]) hole_x(d,len);
-    }
-}
-
-module camera_supports() {
-    // Fixed ears and ribs remain well behind the front inner surface.
-    support_x = camera_cradle_w/2 + 2.2;
-    ear_t = 4.0;
-    ear_y = camera_pivot_y;
-    ear_z = camera_z;
-    for (sx=[-1,1]) {
-        x0=sx*support_x;
-        difference() {
-            union() {
-                translate([x0,ear_y,ear_z]) rotate([0,90,0]) cylinder(d=13,h=ear_t,center=true);
-                // Left side only: fixed locking plate covering the 10-35 degree arc.
-                if (sx < 0) hull() {
-                    translate([x0, ear_y+lock_radius*cos(cam_min_angle), ear_z+lock_radius*sin(cam_min_angle)]) rotate([0,90,0]) cylinder(d=8,h=ear_t,center=true);
-                    translate([x0, ear_y+lock_radius*cos(cam_max_angle), ear_z+lock_radius*sin(cam_max_angle)]) rotate([0,90,0]) cylinder(d=8,h=ear_t,center=true);
-                    translate([x0,ear_y,ear_z]) rotate([0,90,0]) cylinder(d=8,h=ear_t,center=true);
-                }
-                // printable rib back to the front wall, entirely internal
-                hull() {
-                    translate([x0, -18.8, ear_z+2]) cube([ear_t,3.0,11],center=true);
-                    translate([x0, ear_y, ear_z]) cube([ear_t,4,9],center=true);
-                }
-            }
-            translate([x0,ear_y,ear_z]) hole_x(pivot_clearance_d,ear_t+2);
-            // Only LEFT side has the curved locking slot.
-            if (sx < 0)
-                translate([x0,ear_y,ear_z]) arc_slot_x(lock_radius,cam_min_angle,cam_max_angle,lock_clearance_d+0.35,ear_t+2);
-        }
-    }
+    // Through the front wall only; no internal tunnel or separate camera cradle.
+    translate([camera_x,-case_d/2+0.5,camera_z])
+        rounded_prism_y(camera_window_w,2*wall+4,camera_window_h,camera_window_r);
 }
 
 module front_m3_bosses() {
@@ -187,7 +181,6 @@ module front_shell() {
     difference() {
         union() {
             front_skin();
-            camera_supports();
             front_m3_bosses();
             front_upper_hooks();
         }
@@ -227,19 +220,55 @@ module rear_m3_holes() {
     }
 }
 
-module keyhole_cut(z=40) {
-    translate([0,case_d/2-0.2,z]) {
-        hole_y(4.4,7);
-        translate([0,0,5]) hull() {
-            hole_y(4.4,7);
-            translate([0,0,5]) hole_y(7.5,7);
-        }
-    }
+// Local wall frame: X horizontal, Y toward wall, Z vertical when installed.
+module wall_frame() {
+    translate([0,wall_plane_y,0]) rotate([-wall_tilt,0,0]) children();
 }
 
-module anti_rotation_hole(z=43) {
-    // Small secondary wall screw / locating hole below the main keyhole.
-    translate([0,case_d/2-0.2,z]) hole_y(4.0,7);
+module wall_mount_rib(x) {
+    // Side webs attach to rear skin and stop 2 mm short of the wall contact plane.
+    translate([x-mount_rib_t/2,0,0])
+        rotate([90,0,90]) linear_extrude(height=mount_rib_t)
+            polygon(points=[
+                [case_d/2-1.5,mount_z_min],
+                [wall_plane_y+mount_z_min*tan(wall_tilt)-2/cos(wall_tilt),mount_z_min],
+                [wall_plane_y+mount_z_max*tan(wall_tilt)-2/cos(wall_tilt),mount_z_max],
+                [case_d/2-1.5,mount_z_max]
+            ]);
+}
+
+module wall_mount() {
+    difference() {
+        union() {
+            for (x=[-mount_rib_x,mount_rib_x]) wall_mount_rib(x);
+            wall_frame() {
+                // Upper cross plate carries the single screw and joins both webs.
+                translate([0,-mount_plate_t/2,62])
+                    cube([68,mount_plate_t,34],center=true);
+                // Two spaced lower contact pads stabilize pitch and sideways rocking.
+                for (x=[-mount_rib_x,mount_rib_x])
+                    translate([x,-mount_plate_t/2,-72])
+                        cube([10,mount_plate_t,12],center=true);
+            }
+        }
+        wall_frame() {
+            // Genuine gravity keyhole: large head-entry BELOW narrow shaft seat.
+            translate([0,-mount_plate_t/2,mount_entry_z])
+                hole_y(mount_screw_head_d,mount_plate_t+2);
+            hull() {
+                translate([0,-mount_plate_t/2,mount_entry_z])
+                    hole_y(mount_screw_shank_d,mount_plate_t+2);
+                translate([0,-mount_plate_t/2,mount_seat_z])
+                    hole_y(mount_screw_shank_d,mount_plate_t+2);
+            }
+            // Clearance for the head behind the plate along its complete travel.
+            hull() {
+                for (z=[mount_entry_z,mount_seat_z])
+                    translate([0,-mount_plate_t-mount_head_space/2-0.01,z])
+                        hole_y(mount_screw_head_d,mount_head_space);
+            }
+        }
+    }
 }
 
 module dupont_bay_cut(x=0,z=0, bay_cut_w) {
@@ -370,7 +399,7 @@ module pcb_rails2() {
     // Vertical position of the rail center.
     //
     // This is unchanged from the original design.
-    rail_z = -3;
+    rail_z = pcb_reference_z;
 
 
     // ============================================================
@@ -418,7 +447,7 @@ module pcb_rails2() {
     //
     // Slightly shorter than the complete rail so the rail
     // still has material at the upper and lower ends.
-    slot_length = 60;
+    slot_length = pcb_reference_h;
 
 
     // ============================================================
@@ -437,33 +466,8 @@ module pcb_rails2() {
     // PCB SLOT Y POSITION
     // ============================================================
 
-    // The PCB must remain in exactly the same Y position
-    // as in the previous version.
-    //
-    // ORIGINAL:
-    //
-    //     rail_y       = 11.5
-    //     slot_y_offset = -6
-    //
-    //     PCB slot center:
-    //
-    //     11.5 - 6 = 5.5 mm
-    //
-    //
-    // NEW:
-    //
-    //     rail_y = 14
-    //
-    // Therefore:
-    //
-    //     14 + slot_y_offset = 5.5
-    //
-    //     slot_y_offset = -8.5
-    //
-    // This means the PCB DOES NOT MOVE.
-    // Only the rail grows 5 mm toward the Dupont side.
-    //
-    slot_y_offset = -8.5;
+    // Actual channel center: 9.5 - 8.5 = 1.0 mm in global Y.
+    slot_y_offset = pcb_slot_y_offset;
 
 
     // ============================================================
@@ -629,6 +633,7 @@ module rear_shell() {
     difference() {
         union() {
             rear_skin();
+            //wall_mount();
             rear_catches();
             rear_m3_pads();
             pcb_rails2();
@@ -637,8 +642,7 @@ module rear_shell() {
         }
         rear_m3_holes();
         usb_power_entry_cut();
-        keyhole_cut(55);
-        anti_rotation_hole(43);
+        // Suspension is now in the external wedge, not through the rear skin.
         
         dupont_bay_cut(bay_xs[0],bay_z, bay_cut_w_2pin);
         dupont_bay_cut(bay_xs[1],bay_z, bay_cut_w_8pin);
@@ -646,37 +650,19 @@ module rear_shell() {
     }
 }
 
-// ---------------- Adjustable camera cradle ----------------
-module camera_cradle() {
-    difference() {
-        union() {
-            // Main camera plate/frame, front face toward -Y at zero angle.
-            translate([0,-3.0,0]) cube([camera_cradle_w,4.0,camera_cradle_h],center=true);
-            // Side retaining rails for camera PCB; open top for removal.
-            for (x=[-(camera_module_w/2+1.2),(camera_module_w/2+1.2)])
-                translate([x,-0.2,-1.0]) cube([2.2,7.5,camera_module_h+2],center=true);
-            translate([0,-0.2,-(camera_module_h/2+1.2)]) cube([camera_module_w+4,7.5,2.2],center=true);
-            // Pivot lugs inside fixed supports.
-            for (x=[-(camera_cradle_w/2-1.4),(camera_cradle_w/2-1.4)])
-                translate([x,0,0]) rotate([0,90,0]) cylinder(d=9,h=2.8,center=true);
-            // One-sided locking lug on left only, structurally bridged to the pivot lug.
-            translate([-(camera_cradle_w/2-1.4), lock_radius, 0]) rotate([0,90,0]) cylinder(d=7,h=2.8,center=true);
-            hull() {
-                translate([-(camera_cradle_w/2-1.4), 2.0, 0]) rotate([0,90,0]) cylinder(d=5.5,h=2.8,center=true);
-                translate([-(camera_cradle_w/2-1.4), lock_radius-2.0, 0]) rotate([0,90,0]) cylinder(d=5.5,h=2.8,center=true);
-            }
-            // Ribbon cable guide tab, rear/lower side.
-            translate([8,1.8,-11]) cube([8,3,3],center=true);
-        }
-        // Lens window in cradle itself.
-        translate([0,-3.0,0]) cube([16.5,7,16.5],center=true);
-        // Coaxial M2.5 pivot clearance through both lugs and center.
-        hole_x(pivot_clearance_d,camera_cradle_w+5);
-        // Lock hole only on left lug; located at +Y radius and follows rotation.
-        translate([-(camera_cradle_w/2-1.4), lock_radius, 0]) hole_x(lock_clearance_d,5);
-        // Ribbon path opening.
-        translate([7,-2,-10]) cube([9,8,5],center=true);
-    }
+// ---------------- Electronics reference (NOT printable geometry) ----------------
+module electronics_reference() {
+    // Illustrative envelope only: excludes pins, USB sockets and ribbon details.
+    // Its dimensions follow the old rail assumptions, not a dimensional survey.
+    color([0.1,0.45,0.2,0.8])
+        translate([0,pcb_reference_y,pcb_reference_z])
+            cube([pcb_reference_w,1.6,pcb_reference_h],center=true);
+    color([0.15,0.15,0.15,1])
+        translate([camera_x,pcb_reference_y-camera_preview_projection/2,camera_z])
+            cube([9,camera_preview_projection,9],center=true);
+    color([0.25,0.45,0.65,1])
+        translate([camera_x,pcb_reference_y-camera_preview_projection,camera_z])
+            hole_y(6,1);
 }
 
 // ---------------- Modular Dupont inserts ----------------
@@ -691,28 +677,30 @@ module snap_tab(zsign=1) {
 
 
 
-// ---------------- Camera angle setup gauge ----------------
-module angle_gauge() {
-    // Small 32 x 18 x 2.4 setup tool; three edges correspond to 10/20/35 deg.
-    linear_extrude(height=2.4,center=true)
-    polygon(points=[[0,0],[30,0],[30,5.3],[18,5.3],[18,11.0],[8,11.0],[8,17.2],[0,17.2]]);
-}
-
 // ---------------- Assembly visualization ----------------
-module camera_at(angle=cam_nom_angle) {
-    translate([0,camera_pivot_y,camera_z]) rotate([angle,0,0]) camera_cradle();
+module assembly() {
+    color([0.8,0.8,0.8,0.35]) front_shell();
+    color("lightgray") rear_shell();
+    if ($preview && show_electronics) %electronics_reference();
 }
 
-module assembly() {
-    color("gainsboro") front_shell();
-    color("lightgray") rear_shell();
-    color("orange") camera_at(cam_nom_angle);
-    }
+// Installed view: wall is Y=0, room is negative Y; camera points down.
+module wall_assembly() {
+    translate([0,-wall_plane_y*cos(wall_tilt),0])
+        rotate([wall_tilt,0,0]) assembly();
+    if ($preview) %color([0.7,0.65,0.6,0.3])
+        translate([0,2,0]) cube([120,4,260],center=true);
+}
 
 // ---------------- Part selector ----------------
+assert(wall_tilt >= 10 && wall_tilt <= 35, "Wall tilt must be 10..35 degrees downward");
+assert(mount_screw_head_d > mount_screw_shank_d+2, "Insufficient screw head retention");
+assert(camera_window_w < case_w-2*wall, "Camera window exceeds case width");
+assert(abs(camera_z)+camera_window_h/2 < case_h/2-corner_r,
+       "Camera window exceeds the straight front area");
 if (PART=="front") front_shell();
 else if (PART=="rear") rear_shell();
-else if (PART=="camera_cradle") camera_cradle();
-else if (PART=="angle_gauge") angle_gauge();
-else if (PART=="pcb2") pcb_rails2();   
-else assembly();
+else if (PART=="pcb2") pcb_rails2();
+else if (PART=="assembly") assembly();
+else if (PART=="wall_assembly") wall_assembly();
+else assert(false, "Use front, rear, pcb2, assembly or wall_assembly.");
