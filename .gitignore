@@ -6,3 +6,4 @@
 .vscode
 src/secrets.h
 case/build/
+case/verification_output

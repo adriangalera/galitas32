@@ -13,10 +13,6 @@ PARTS = {
     "front": "front_shell.stl",
     "rear": "rear_shell.stl",
     "camera_cradle": "camera_cradle.stl",
-    "dupont_2": "dupont_insert_2pin.stl",
-    "dupont_3": "dupont_insert_3pin.stl",
-    "dupont_4": "dupont_insert_4pin.stl",
-    "dupont_6": "dupont_insert_6pin.stl",
     "angle_gauge": "camera_angle_gauge.stl",
 }
 
