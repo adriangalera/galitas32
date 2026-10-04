@@ -1,5 +1,5 @@
 param(
-    [string]$Scad = ".\alarm_case.scad",
+    [string]$Scad = ".\alarm_case2.scad",
     [string]$OpenSCAD = "",
     [string]$Reference = ".\qa_mesh_v4.json",
     [string]$Output = ".\verification_output",

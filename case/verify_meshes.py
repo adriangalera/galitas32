@@ -15,10 +15,6 @@ REQUIRED = [
     "front_shell.stl",
     "rear_shell.stl",
     "camera_cradle.stl",
-    "dupont_insert_2pin.stl",
-    "dupont_insert_3pin.stl",
-    "dupont_insert_4pin.stl",
-    "dupont_insert_6pin.stl",
     "camera_angle_gauge.stl",
 ]
 

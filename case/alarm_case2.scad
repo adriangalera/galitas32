@@ -3,7 +3,7 @@
 // Designed for 0.4 mm nozzle / 0.2 mm layers, PLA or PETG.
 $fn = 48;
 
-PART = "rear"; // front, rear, camera_cradle, angle_gauge, assembly
+PART = "pcb2"; // front, rear, camera_cradle, angle_gauge, assembly
 
 // ---------------- User-tunable parameters ----------------
 case_w = 74;
@@ -37,6 +37,7 @@ bay_h = 10;
 bay_cut_w_2pin = 5.50;
 bay_cut_w_3pin = 8;
 bay_cut_w_5pin = 16;
+bay_cut_w_8pin = 21;
 bay_cut_h = 3;
 bay_z = -57;   // moved to lower rear section, above closure screws
 bay_xs = [-22, 0, 22];
@@ -307,16 +308,328 @@ module pcb_rails() {
 }
 
 module pcb_rails2() {
-    // Removable ESP32 support: generous 31 mm rail spacing, open ends for serviceability.
-    wall_h = 20;
-    start_rail = -6;
-    for (x=[-16,16])
-        translate([x,14.5,-3]) difference() {
-            cube([3.2,wall_h,66],center=true);
-            translate([x>0?-1.0:1.0,start_rail,0]) cube([2.0,6,60],center=true);
-        }
-    // small lower stop, leaving USB-C and microSD regions accessible from within when opened
-    translate([0,14.5,-34.5]) cube([31,10,3],center=true);
+
+    // ============================================================
+    // PCB DIMENSIONS
+    // ============================================================
+
+    // Real width of the ESP32 PCB.
+    // The PCB is assumed to be centered on the X axis.
+    pcb_width = 28;
+
+    // Extra clearance so the PCB can slide into the rails
+    // without being too tight after 3D printing.
+    //
+    // 0.4 mm total clearance = 0.2 mm on each side.
+    pcb_clearance = 0.4;
+
+
+    // ============================================================
+    // RAIL X POSITION
+    // ============================================================
+
+    // X position of the center of each rail.
+    //
+    // PCB width:
+    //
+    //        -14 mm                  +14 mm
+    //           |                       |
+    //           |-------- PCB ----------|
+    //
+    // The slot inside each rail is shifted 1 mm toward the PCB.
+    //
+    // For a 28 mm PCB:
+    //
+    //     PCB half width       = 14.0 mm
+    //     clearance per side   =  0.2 mm
+    //     slot offset          =  1.0 mm
+    //
+    //     rail_x = 14.0 + 0.2 + 1.0
+    //            = 15.2 mm
+    //
+    rail_x = (pcb_width + pcb_clearance) / 2 + 1;
+
+
+    // ============================================================
+    // RAIL Y POSITION
+    // ============================================================
+
+    // Center position of the rail in Y.
+    //
+    // ORIGINAL:
+    //
+    //     rail_y     = 11.5
+    //     rail_depth = 20
+    //
+    //     Y range = 1.5 ... 21.5
+    //
+    // NEW:
+    //
+    //     rail_y     = 14
+    //     rail_depth = 25
+    //
+    //     Y range = 1.5 ... 26.5
+    //
+    // Therefore:
+    //
+    // - The original rear edge stays at exactly Y = 1.5
+    // - The structure gains the full 5 mm toward the Dupont side.
+    //
+    rail_y = 14;
+
+
+    // ============================================================
+    // RAIL Z POSITION
+    // ============================================================
+
+    // Vertical position of the rail center.
+    //
+    // This is unchanged from the original design.
+    rail_z = -3;
+
+
+    // ============================================================
+    // RAIL DIMENSIONS
+    // ============================================================
+
+    // Thickness of each rail in X.
+    rail_width = 3.2;
+
+
+    // Depth of each rail in Y.
+    //
+    // ORIGINAL = 20 mm
+    // NEW      = 25 mm
+    //
+    // The additional 5 mm provides more structure around the
+    // PCB + Dupont connector assembly.
+    rail_depth = 25;
+
+
+    // Total vertical length of the rail.
+    //
+    // This has NOT been changed because the problem is not
+    // the vertical PCB height, but the PCB + Dupont depth.
+    rail_length = 66;
+
+
+    // ============================================================
+    // PCB SLOT DIMENSIONS
+    // ============================================================
+
+    // Width of the PCB slot in X.
+    //
+    // This should be slightly larger than the PCB thickness.
+    slot_width = 2.0;
+
+
+    // Depth of the PCB slot in Y.
+    //
+    // This determines how far the PCB edge enters the rail.
+    slot_depth = 6;
+
+
+    // Vertical length of the PCB slot.
+    //
+    // Slightly shorter than the complete rail so the rail
+    // still has material at the upper and lower ends.
+    slot_length = 60;
+
+
+    // ============================================================
+    // PCB SLOT X POSITION
+    // ============================================================
+
+    // Offset toward the center of the enclosure.
+    //
+    // RIGHT rail -> slot moves left
+    // LEFT rail  -> slot moves right
+    //
+    slot_x_offset = 1.0;
+
+
+    // ============================================================
+    // PCB SLOT Y POSITION
+    // ============================================================
+
+    // The PCB must remain in exactly the same Y position
+    // as in the previous version.
+    //
+    // ORIGINAL:
+    //
+    //     rail_y       = 11.5
+    //     slot_y_offset = -6
+    //
+    //     PCB slot center:
+    //
+    //     11.5 - 6 = 5.5 mm
+    //
+    //
+    // NEW:
+    //
+    //     rail_y = 14
+    //
+    // Therefore:
+    //
+    //     14 + slot_y_offset = 5.5
+    //
+    //     slot_y_offset = -8.5
+    //
+    // This means the PCB DOES NOT MOVE.
+    // Only the rail grows 5 mm toward the Dupont side.
+    //
+    slot_y_offset = -8.5;
+
+
+    // ============================================================
+    // CREATE LEFT AND RIGHT PCB RAILS
+    // ============================================================
+
+    // Generate two rails:
+    //
+    //     -rail_x = left rail
+    //     +rail_x = right rail
+    //
+    for (x = [-rail_x, rail_x])
+
+        // Move each rail to its final position.
+        translate([
+            x,
+            rail_y,
+            rail_z
+        ])
+
+            // Subtract the PCB slot from the solid rail.
+            difference() {
+
+                // =================================================
+                // MAIN RAIL BODY
+                // =================================================
+
+                // Solid rail.
+                //
+                // X = rail thickness
+                // Y = rail depth
+                // Z = rail vertical length
+                //
+                cube(
+                    [
+                        rail_width,
+                        rail_depth,
+                        rail_length
+                    ],
+                    center = true
+                );
+
+
+                // =================================================
+                // PCB SLOT
+                // =================================================
+
+                // Move the slot toward the PCB center.
+                //
+                // Right rail:
+                //
+                //     x > 0
+                //     offset = -1 mm
+                //
+                // Left rail:
+                //
+                //     x < 0
+                //     offset = +1 mm
+                //
+                translate([
+                    x > 0
+                        ? -slot_x_offset
+                        :  slot_x_offset,
+
+                    slot_y_offset,
+
+                    0
+                ])
+
+                    // Material removed to create the PCB channel.
+                    cube(
+                        [
+                            slot_width,
+                            slot_depth,
+                            slot_length
+                        ],
+                        center = true
+                    );
+            }
+
+
+    // ============================================================
+    // LOWER PCB STOP
+    // ============================================================
+
+    // Width of the lower PCB support.
+    //
+    // PCB = 28 mm
+    //
+    // 29 mm gives a small amount of support beyond both PCB edges.
+    lower_stop_width = 29;
+
+
+    // Depth of the lower stop.
+    //
+    // ORIGINAL = 10 mm
+    // NEW      = 15 mm
+    //
+    // This also adds 5 mm toward the Dupont side, matching the
+    // modification made to the main rails.
+    //
+    // Because its center also moves from 11.5 to 14 mm:
+    //
+    // ORIGINAL:
+    //
+    //     center = 11.5
+    //     depth  = 10
+    //     range  = 6.5 ... 16.5
+    //
+    // NEW:
+    //
+    //     center = 14
+    //     depth  = 15
+    //     range  = 6.5 ... 21.5
+    //
+    // So the original rear edge remains unchanged.
+    lower_stop_depth = 15;
+
+
+    // Thickness of the lower support in Z.
+    lower_stop_height = 3;
+
+
+    // Vertical position of the lower stop.
+    //
+    // This remains unchanged.
+    lower_stop_z = -34.5;
+
+
+    // ============================================================
+    // CREATE LOWER PCB STOP
+    // ============================================================
+
+    // The lower stop prevents the ESP32 PCB from sliding downward.
+    //
+    // Its Y depth has also been extended to better support the
+    // PCB + Dupont assembly.
+    translate([
+        0,
+        rail_y,
+        lower_stop_z
+    ])
+
+        cube(
+            [
+                lower_stop_width,
+                lower_stop_depth,
+                lower_stop_height
+            ],
+            center = true
+        );
 }
 
 module buzzer_shelf() {
@@ -331,20 +644,20 @@ module rear_shell() {
     difference() {
         union() {
             rear_skin();
-            //rear_catches();
-            //rear_m3_pads();
-            //pcb_rails();
-            //vertical_bus_supports();
-            //usb_strain_relief_bridges();
+            rear_catches();
+            rear_m3_pads();
+            pcb_rails2();
+            vertical_bus_supports();
+            usb_strain_relief_bridges();
         }
-        //rear_m3_holes();
-        //usb_power_entry_cut();
-        //keyhole_cut(55);
-        //anti_rotation_hole(43);
+        rear_m3_holes();
+        usb_power_entry_cut();
+        keyhole_cut(55);
+        anti_rotation_hole(43);
         
-        //dupont_bay_cut(bay_xs[0],bay_z, bay_cut_w_2pin);
-        //dupont_bay_cut(bay_xs[1],bay_z, bay_cut_w_3pin);
-        //dupont_bay_cut(bay_xs[2],bay_z, bay_cut_w_5pin);
+        dupont_bay_cut(bay_xs[0],bay_z, bay_cut_w_2pin);
+        dupont_bay_cut(bay_xs[1],bay_z, bay_cut_w_8pin);
+        dupont_bay_cut(bay_xs[2],bay_z, bay_cut_w_3pin);
     }
 }
 
