@@ -1,0 +1,197 @@
+{
+  "checks": [
+    {
+      "name": "Case target envelope",
+      "pass": true,
+      "detail": "case=74 x 44 x 190 mm",
+      "kind": "static"
+    },
+    {
+      "name": "USB entry centered",
+      "pass": true,
+      "detail": "usb_entry_x=0 mm",
+      "kind": "static"
+    },
+    {
+      "name": "USB clear of both M3 axes",
+      "pass": true,
+      "detail": "edge-to-M3-axis gap=11.60 mm; M3 x=\u00b120",
+      "kind": "static"
+    },
+    {
+      "name": "USB below Dupont bays",
+      "pass": true,
+      "detail": "USB top z=-86.60; Dupont bottom z=-62.00",
+      "kind": "static"
+    },
+    {
+      "name": "USB opens at lower case edge",
+      "pass": true,
+      "detail": "USB bottom z=-97.40; case bottom z=-95.00",
+      "kind": "static"
+    },
+    {
+      "name": "5V/GND buses on opposite sides",
+      "pass": true,
+      "detail": "bus centers x=\u00b129; separation=58 mm",
+      "kind": "static"
+    },
+    {
+      "name": "Bus supports above Dupont zone",
+      "pass": true,
+      "detail": "lowest clip approx z=-44.5; bay top z=-52.0",
+      "kind": "static"
+    },
+    {
+      "name": "Bus supports clear of camera mechanism",
+      "pass": true,
+      "detail": "Z: clip top~33.5, cradle bottom~33.0; X: clip inner~26.1, camera outer~18.7",
+      "kind": "static"
+    },
+    {
+      "name": "Bus supports clear of lower M3",
+      "pass": true,
+      "detail": "bus lower approx z=-44.5; M3 z=-71",
+      "kind": "static"
+    },
+    {
+      "name": "Camera angle range",
+      "pass": true,
+      "detail": "min/nom/max=10/20/35 deg",
+      "kind": "static"
+    },
+    {
+      "name": "M2.5 pivot clearance",
+      "pass": true,
+      "detail": "pivot_clearance_d=2.9 mm",
+      "kind": "static"
+    },
+    {
+      "name": "M2.5 lock clearance",
+      "pass": true,
+      "detail": "lock_clearance_d=2.9 mm",
+      "kind": "static"
+    },
+    {
+      "name": "Two bus sides coded",
+      "pass": true,
+      "detail": "vertical_bus_supports() iterates side=[-1,1]",
+      "kind": "static"
+    },
+    {
+      "name": "Two USB strain-relief bridges coded",
+      "pass": true,
+      "detail": "usb_strain_relief_bridges() iterates sx=[-1,1]",
+      "kind": "static"
+    },
+    {
+      "name": "One-sided locking slot coded",
+      "pass": true,
+      "detail": "locking slot is gated by sx < 0; opposite support is pivot-only",
+      "kind": "static"
+    },
+    {
+      "name": "Front hooks module present",
+      "pass": true,
+      "detail": "front_upper_hooks() found",
+      "kind": "static"
+    },
+    {
+      "name": "Rear catches module present",
+      "pass": true,
+      "detail": "rear_catches() found",
+      "kind": "static"
+    },
+    {
+      "name": "USB cut module present",
+      "pass": true,
+      "detail": "usb_power_entry_cut() found",
+      "kind": "static"
+    },
+    {
+      "name": "Camera vs front @ 10 deg",
+      "pass": true,
+      "detail": "cradle must not collide with front shell/supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Camera vs front @ 15 deg",
+      "pass": true,
+      "detail": "cradle must not collide with front shell/supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Camera vs front @ 20 deg",
+      "pass": true,
+      "detail": "cradle must not collide with front shell/supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Camera vs front @ 25 deg",
+      "pass": true,
+      "detail": "cradle must not collide with front shell/supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Camera vs front @ 30 deg",
+      "pass": true,
+      "detail": "cradle must not collide with front shell/supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Camera vs front @ 35 deg",
+      "pass": true,
+      "detail": "cradle must not collide with front shell/supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Front pivot M2.5 path",
+      "pass": true,
+      "detail": "2.5 mm coaxial shaft probe through fixed supports; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Cradle pivot M2.5 path",
+      "pass": true,
+      "detail": "2.5 mm coaxial shaft probe through cradle; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Rear M3 through-holes",
+      "pass": true,
+      "detail": "3.0 mm shaft probes through both rear M3 paths; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "USB plug passage",
+      "pass": true,
+      "detail": "nominal USB rectangle through rear exterior region; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "USB downward exit",
+      "pass": true,
+      "detail": "bottom-edge path must be open downward; grouped intersection EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Strain relief attached to rear wall",
+      "pass": true,
+      "detail": "bridges must overlap rear skin so they are not floating; overlap NON-EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Bus clips attached to rear wall",
+      "pass": true,
+      "detail": "bus clip bridges must overlap rear skin; overlap NON-EMPTY",
+      "kind": "CGAL"
+    },
+    {
+      "name": "Front hooks cross seam",
+      "pass": true,
+      "detail": "front hooks must extend into y>0 rear half; overlap NON-EMPTY",
+      "kind": "CGAL"
+    }
+  ],
+  "pass": true
+}

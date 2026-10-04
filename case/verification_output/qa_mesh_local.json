@@ -1,8 +1,10 @@
 {
   "front_shell.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -37.0,
@@ -11,21 +13,31 @@
       ],
       [
         37.0,
-        8.54,
+        8.5405,
         95.0
       ]
     ],
     "extents_mm": [
       74.0,
-      30.54,
+      30.5405,
       190.0
     ],
-    "volume_mm3": 60755.362
+    "volume_mm3": 60755.362,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      74.0,
+      30.540480000000002,
+      190.0
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "rear_shell.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -37.0,
@@ -43,12 +55,22 @@
       22.0,
       190.0
     ],
-    "volume_mm3": 66371.007
+    "volume_mm3": 66371.007,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      190.0,
+      74.0,
+      22.0
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "camera_cradle.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -14.55,
@@ -66,12 +88,22 @@
       19.0,
       30.0
     ],
-    "volume_mm3": 3211.624
+    "volume_mm3": 3211.624,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      19.0,
+      30.0,
+      29.1
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "dupont_insert_2pin.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -10.25,
@@ -89,12 +121,22 @@
       7.05,
       12.5
     ],
-    "volume_mm3": 1211.106
+    "volume_mm3": 1211.106,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      12.5,
+      20.5,
+      7.050000000000001
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "dupont_insert_3pin.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -10.25,
@@ -112,12 +154,22 @@
       7.05,
       12.5
     ],
-    "volume_mm3": 1201.887
+    "volume_mm3": 1201.887,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      12.5,
+      20.5,
+      7.050000000000001
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "dupont_insert_4pin.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -10.25,
@@ -135,12 +187,22 @@
       7.05,
       12.5
     ],
-    "volume_mm3": 1192.668
+    "volume_mm3": 1192.668,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      12.5,
+      20.5,
+      7.050000000000001
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "dupont_insert_6pin.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         -10.25,
@@ -158,12 +220,22 @@
       7.05,
       12.5
     ],
-    "volume_mm3": 1174.231
+    "volume_mm3": 1174.231,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      12.5,
+      20.5,
+      7.050000000000001
+    ],
+    "reference_warnings": [],
+    "pass": true
   },
   "camera_angle_gauge.stl": {
     "watertight": true,
+    "manifold_edges": true,
     "winding_consistent": true,
     "connected_components": 1,
+    "degenerate_faces": 0,
     "bounds_mm": [
       [
         0.0,
@@ -181,6 +253,14 @@
       17.2,
       2.4
     ],
-    "volume_mm3": 746.88
+    "volume_mm3": 746.88,
+    "fits_printer_envelope": true,
+    "fitting_orientation_mm": [
+      17.2,
+      2.4,
+      30.0
+    ],
+    "reference_warnings": [],
+    "pass": true
   }
 }

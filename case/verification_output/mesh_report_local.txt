@@ -1,0 +1,86 @@
+Mesh verification
+=================
+STL dir: C:\Users\gal\Documents\Arduino\galitas32\case\verification_output\stl
+Printer envelope: (220.0, 220.0, 250.0) mm
+
+front_shell.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [74.0, 30.5405, 190.0]
+  Volume mm3: 60755.362
+  Fits Artillery Genius envelope: PASS
+
+rear_shell.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [74.0, 22.0, 190.0]
+  Volume mm3: 66371.007
+  Fits Artillery Genius envelope: PASS
+
+camera_cradle.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [29.1, 19.0, 30.0]
+  Volume mm3: 3211.624
+  Fits Artillery Genius envelope: PASS
+
+dupont_insert_2pin.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [20.5, 7.05, 12.5]
+  Volume mm3: 1211.106
+  Fits Artillery Genius envelope: PASS
+
+dupont_insert_3pin.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [20.5, 7.05, 12.5]
+  Volume mm3: 1201.887
+  Fits Artillery Genius envelope: PASS
+
+dupont_insert_4pin.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [20.5, 7.05, 12.5]
+  Volume mm3: 1192.668
+  Fits Artillery Genius envelope: PASS
+
+dupont_insert_6pin.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [20.5, 7.05, 12.5]
+  Volume mm3: 1174.231
+  Fits Artillery Genius envelope: PASS
+
+camera_angle_gauge.stl
+  Watertight: PASS
+  Manifold edges: PASS
+  Winding consistent: PASS
+  Connected components: 1 (PASS)
+  Degenerate faces: 0 (PASS)
+  Extents mm: [30.0, 17.2, 2.4]
+  Volume mm3: 746.88
+  Fits Artillery Genius envelope: PASS
+
+RESULT: PASS (0 failing part(s))

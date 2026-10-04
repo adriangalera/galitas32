@@ -3,7 +3,7 @@
 // Designed for 0.4 mm nozzle / 0.2 mm layers, PLA or PETG.
 $fn = 48;
 
-PART = "pcb2"; // front, rear, camera_cradle, angle_gauge, assembly
+PART = "rear"; // front, rear, camera_cradle, angle_gauge, assembly
 
 // ---------------- User-tunable parameters ----------------
 case_w = 74;
@@ -331,20 +331,20 @@ module rear_shell() {
     difference() {
         union() {
             rear_skin();
-            rear_catches();
-            rear_m3_pads();
-            pcb_rails();
-            vertical_bus_supports();
-            usb_strain_relief_bridges();
+            //rear_catches();
+            //rear_m3_pads();
+            //pcb_rails();
+            //vertical_bus_supports();
+            //usb_strain_relief_bridges();
         }
-        rear_m3_holes();
-        usb_power_entry_cut();
-        keyhole_cut(55);
-        anti_rotation_hole(43);
-        //for (i=[0:len(bay_xs)-1]) dupont_bay_cut(bay_xs[i],bay_z);
-        dupont_bay_cut(bay_xs[0],bay_z, bay_cut_w_2pin);
-        dupont_bay_cut(bay_xs[1],bay_z, bay_cut_w_3pin);
-        dupont_bay_cut(bay_xs[2],bay_z, bay_cut_w_5pin);
+        //rear_m3_holes();
+        //usb_power_entry_cut();
+        //keyhole_cut(55);
+        //anti_rotation_hole(43);
+        
+        //dupont_bay_cut(bay_xs[0],bay_z, bay_cut_w_2pin);
+        //dupont_bay_cut(bay_xs[1],bay_z, bay_cut_w_3pin);
+        //dupont_bay_cut(bay_xs[2],bay_z, bay_cut_w_5pin);
     }
 }
 
