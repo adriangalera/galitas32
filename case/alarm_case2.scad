@@ -3,7 +3,7 @@
 // Designed for 0.4 mm nozzle / 0.2 mm layers, PLA or PETG.
 $fn = 48;
 
-PART = "pcb2"; // front, rear, camera_cradle, angle_gauge, assembly
+PART = "rear"; // front, rear, camera_cradle, angle_gauge, assembly
 
 // ---------------- User-tunable parameters ----------------
 case_w = 74;
@@ -11,7 +11,10 @@ case_d = 44;
 case_h = 190;
 corner_r = 11;
 wall = 2.4;
-seam_y = 0;
+// Shared rail dimensions: the rear rim follows the front edge of the rails.
+pcb_rail_y = 9.5;
+pcb_rail_depth = 25;
+seam_y = min(0, pcb_rail_y - pcb_rail_depth/2); // -3 mm; rear half depth = 25 mm
 
 camera_z = 48;
 camera_pivot_y = -5.8;
@@ -97,14 +100,16 @@ module shell_skin() {
 module front_skin() {
     intersection() {
         shell_skin();
-        translate([0,-case_d/4-0.1,0]) cube([case_w+4,case_d/2+0.2,case_h+4],center=true);
+        translate([0,(seam_y-case_d/2-2)/2,0])
+            cube([case_w+4,seam_y+case_d/2+2,case_h+4],center=true);
     }
 }
 
 module rear_skin() {
     intersection() {
         shell_skin();
-        translate([0,case_d/4+0.1,0]) cube([case_w+4,case_d/2+0.2,case_h+4],center=true);
+        translate([0,(seam_y+case_d/2+2)/2,0])
+            cube([case_w+4,case_d/2+2-seam_y,case_h+4],center=true);
     }
 }
 
@@ -165,14 +170,14 @@ module front_m3_bosses() {
 }
 
 module front_upper_hooks() {
-    // Two real seam-crossing hooks. Front half extends through Y=0 into rear catch volume.
+    // Two real seam-crossing hooks. Front half extends through Y=seam_y into rear catch volume.
     for (x=[-20,20]) {
         union() {
-            translate([x,-3.0,76]) cube([8,6,4],center=true);
-            translate([x,1.25,78.2]) cube([8,2.8,4.4],center=true); // barb across seam
+            translate([x,seam_y-3.0,76]) cube([8,6,4],center=true);
+            translate([x,seam_y+1.25,78.2]) cube([8,2.8,4.4],center=true); // barb across seam
             hull() {
                 translate([x,-18.6,74]) cube([8,3.0,4],center=true);
-                translate([x,-3.0,76]) cube([8,2,4],center=true);
+                translate([x,seam_y-3.0,76]) cube([8,2,4],center=true);
             }
         }
     }
@@ -196,15 +201,15 @@ module rear_catches() {
     for (x=[-20,20])
         difference() {
             union() {
-                translate([x,3.1,80.6]) cube([11,6.2,3.4],center=true);
-                translate([x-4.8,3.1,77.8]) cube([1.8,6.2,7.5],center=true);
-                translate([x+4.8,3.1,77.8]) cube([1.8,6.2,7.5],center=true);
+                translate([x,seam_y+3.1,80.6]) cube([11,6.2,3.4],center=true);
+                translate([x-4.8,seam_y+3.1,77.8]) cube([1.8,6.2,7.5],center=true);
+                translate([x+4.8,seam_y+3.1,77.8]) cube([1.8,6.2,7.5],center=true);
             }
-            translate([x,1.2,78.1]) cube([9.4,4.0,4.8],center=true); // receiving pocket
+            translate([x,seam_y+1.2,78.1]) cube([9.4,4.0,4.8],center=true); // receiving pocket
         }
     // rear-wall bridges keep catches integral while leaving hook pocket open
     for (x=[-20,20]) hull() {
-        translate([x,5.5,82.0]) cube([8,2,2.4],center=true);
+        translate([x,seam_y+5.5,82.0]) cube([8,2,2.4],center=true);
         translate([x,19.0,82.0]) cube([8,2.8,2.4],center=true);
     }
 }
@@ -354,28 +359,8 @@ module pcb_rails2() {
     // RAIL Y POSITION
     // ============================================================
 
-    // Center position of the rail in Y.
-    //
-    // ORIGINAL:
-    //
-    //     rail_y     = 11.5
-    //     rail_depth = 20
-    //
-    //     Y range = 1.5 ... 21.5
-    //
-    // NEW:
-    //
-    //     rail_y     = 14
-    //     rail_depth = 25
-    //
-    //     Y range = 1.5 ... 26.5
-    //
-    // Therefore:
-    //
-    // - The original rear edge stays at exactly Y = 1.5
-    // - The structure gains the full 5 mm toward the Dupont side.
-    //
-    rail_y = 14;
+    // Shared with seam_y so the rear rim stays flush with the rails.
+    rail_y = pcb_rail_y;
 
 
     // ============================================================
@@ -403,7 +388,7 @@ module pcb_rails2() {
     //
     // The additional 5 mm provides more structure around the
     // PCB + Dupont connector assembly.
-    rail_depth = 25;
+    rail_depth = pcb_rail_depth;
 
 
     // Total vertical length of the rail.
