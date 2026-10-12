@@ -1,87 +1,89 @@
 #include <Arduino.h>
-#include <Adafruit_NeoPixel.h>
+#include <SPI.h>
+#include <MFRC522.h>
 
-// ---------------- Door sensor ----------------
-#define DOOR_SENSOR_PIN 19
+// Pines para ESP32 clasico (ESP32-WROOM / DevKit).
+constexpr uint8_t RFID_SS_PIN   = 40; // SDA
+constexpr uint8_t RFID_RST_PIN  = 1;
+constexpr uint8_t RFID_SCK_PIN  = 41;
+constexpr uint8_t RFID_MISO_PIN = 2;
+constexpr uint8_t RFID_MOSI_PIN = 42;
 
-// ---------------- LED strip ----------------
-#define LED_PIN         20
-#define LED_COUNT       60
+MFRC522 rfid(RFID_SS_PIN, RFID_RST_PIN);
 
-Adafruit_NeoPixel strip(
-    LED_COUNT,
-    LED_PIN,
-    NEO_GRB + NEO_KHZ800
-);
-
-
-// --------------------------------------------------
-// Set all LEDs to the same color
-// --------------------------------------------------
-void setLedColor(uint8_t red, uint8_t green, uint8_t blue)
-{
-    for (int i = 0; i < LED_COUNT; i++)
-    {
-        strip.setPixelColor(
-            i,
-            strip.Color(red, green, blue)
-        );
-    }
-
-    strip.show();
-}
-
-
-// --------------------------------------------------
-// Setup
-// --------------------------------------------------
-void setup()
-{
+void setup() {
     Serial.begin(115200);
     delay(1000);
 
-    Serial.println("===== APPLICATION STARTED =====");
+    Serial.println("\n===== LECTOR RFID RC522 =====");
 
-    // Door sensor
-    //
-    // INPUT_PULLUP:
-    // LOW  -> switch closed -> door closed
-    // HIGH -> switch open   -> door open
-    pinMode(DOOR_SENSOR_PIN, INPUT_PULLUP);
+    // Inicializar SPI con los pines elegidos.
+    SPI.begin(
+        RFID_SCK_PIN,
+        RFID_MISO_PIN,
+        RFID_MOSI_PIN,
+        RFID_SS_PIN
+    );
 
-    // NeoPixel
-    strip.begin();
-    strip.clear();
-    strip.show();
+    rfid.PCD_Init();
+    delay(50);
 
-    Serial.println("Setup complete ...");
+    // Comprobar que el lector responde.
+    byte version = rfid.PCD_ReadRegister(MFRC522::VersionReg);
+
+    Serial.print("Version del lector: 0x");
+    Serial.println(version, HEX);
+
+    if (version == 0x00 || version == 0xFF) {
+        Serial.println("ERROR: el RC522 no responde.");
+        Serial.println("Revisa alimentacion, conexiones y soldaduras.");
+
+        while (true) {
+            delay(1000);
+        }
+    }
+
+    Serial.println("Acerca una tarjeta o llavero RFID...");
 }
 
-
-// --------------------------------------------------
-// Main loop
-// --------------------------------------------------
-void loop()
-{
-    int doorState = digitalRead(DOOR_SENSOR_PIN);
-
-    // Door CLOSED
-    if (doorState == LOW)
-    {
-        Serial.println("Door is closed");
-
-        // BLUE
-        setLedColor(0, 0, 255);
+void loop() {
+    // Esperar una tarjeta nueva.
+    if (!rfid.PICC_IsNewCardPresent()) {
+        delay(10);
+        return;
     }
 
-    // Door OPEN
-    else
-    {
-        Serial.println("Door is open");
-
-        // RED
-        setLedColor(255, 0, 0);
+    // Leer su identificador.
+    if (!rfid.PICC_ReadCardSerial()) {
+        return;
     }
 
-    delay(100);
+    Serial.println("\n--- Tarjeta detectada ---");
+
+    Serial.print("UID: ");
+
+    for (byte i = 0; i < rfid.uid.size; i++) {
+        if (i > 0) {
+            Serial.print(':');
+        }
+
+        if (rfid.uid.uidByte[i] < 0x10) {
+            Serial.print('0');
+        }
+
+        Serial.print(rfid.uid.uidByte[i], HEX);
+    }
+
+    Serial.println();
+
+    MFRC522::PICC_Type tipo = rfid.PICC_GetType(rfid.uid.sak);
+
+    Serial.print("Tipo: ");
+    Serial.println(rfid.PICC_GetTypeName(tipo));
+
+    // Terminar la comunicacion con esta tarjeta.
+    rfid.PICC_HaltA();
+    rfid.PCD_StopCrypto1();
+
+    Serial.println("Retira la tarjeta y acerca otra.");
 }
