@@ -3,7 +3,7 @@
 // Designed for 0.4 mm nozzle / 0.2 mm layers, PLA or PETG.
 $fn = 48;
 
-PART = "exploded"; // front, rear, wall_mount, pcb2, assembly, wall_assembly, exploded
+PART = "wall_mount"; // front, rear, wall_mount, pcb2, assembly, wall_assembly, exploded
 // Camera stays on the ESP32-S3-CAM board, facing -Y (USB connectors downward).
 // No independent camera tilt: the original short ribbon stays in its natural position.
 // The front cover must not pull, clamp or carry the camera when removed.

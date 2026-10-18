@@ -3,11 +3,11 @@
 #include <MFRC522.h>
 
 // Pines para ESP32 clasico (ESP32-WROOM / DevKit).
-constexpr uint8_t RFID_SS_PIN   = 40; // SDA
-constexpr uint8_t RFID_RST_PIN  = 1;
-constexpr uint8_t RFID_SCK_PIN  = 41;
-constexpr uint8_t RFID_MISO_PIN = 2;
-constexpr uint8_t RFID_MOSI_PIN = 42;
+constexpr uint8_t RFID_SS_PIN   = 37; // SDA
+constexpr uint8_t RFID_RST_PIN  = 20;
+constexpr uint8_t RFID_SCK_PIN  = 35;
+constexpr uint8_t RFID_MISO_PIN = 47;
+constexpr uint8_t RFID_MOSI_PIN = 45;
 
 MFRC522 rfid(RFID_SS_PIN, RFID_RST_PIN);
 

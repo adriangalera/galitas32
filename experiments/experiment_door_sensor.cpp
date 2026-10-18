@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-int door_sensor_pin = 19;
+int door_sensor_pin = 14;
 
 void setup()
 {

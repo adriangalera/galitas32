@@ -2,11 +2,16 @@
 #include <Adafruit_NeoPixel.h>
 
 // ---------------- Door sensor ----------------
-#define DOOR_SENSOR_PIN 19
+#define DOOR_SENSOR_PIN 12
 
 // ---------------- LED strip ----------------
-#define LED_PIN         20
+#define LED_PIN         10
 #define LED_COUNT       60
+
+// ---------------- Buzzer ----------------
+#define BUZZER_PIN      4
+
+
 
 Adafruit_NeoPixel strip(
     LED_COUNT,
@@ -48,6 +53,7 @@ void setup()
     // LOW  -> switch closed -> door closed
     // HIGH -> switch open   -> door open
     pinMode(DOOR_SENSOR_PIN, INPUT_PULLUP);
+    pinMode(BUZZER_PIN, OUTPUT);
 
     // NeoPixel
     strip.begin();
@@ -72,6 +78,7 @@ void loop()
 
         // BLUE
         setLedColor(0, 0, 255);
+        analogWrite(BUZZER_PIN, 200); // turn on
     }
 
     // Door OPEN
@@ -81,6 +88,7 @@ void loop()
 
         // RED
         setLedColor(255, 0, 0);
+        analogWrite(BUZZER_PIN, 0); // turn off
     }
 
     delay(100);
