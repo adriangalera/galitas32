@@ -1,5 +1,5 @@
-#include <Arduino.h>
 #include "IDoorSensor.h"
+#include <Arduino.h>
 
 class ArduinoDoorSensor final : public IDoorSensor {
 public:
