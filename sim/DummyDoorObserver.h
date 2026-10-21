@@ -1,5 +1,5 @@
 #include <DoorObserver.h>
-#include <cstdio>
+#include <Logger.h>
 
 class DummyDoorObserver final : public DoorObserver
 {
