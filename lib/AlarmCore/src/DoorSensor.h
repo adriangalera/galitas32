@@ -1,3 +1,6 @@
+/*
+Abstraction for a door sensor
+*/
 #pragma once
 
 enum class DoorState
@@ -6,10 +9,10 @@ enum class DoorState
     Open
 };
 
-class IDoorSensor
+class DoorSensor
 {
 public:
-    virtual ~IDoorSensor() = default;
+    virtual ~DoorSensor() = default;
 
     virtual DoorState read() const = 0;
 };

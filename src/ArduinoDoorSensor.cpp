@@ -1,6 +1,6 @@
 #ifdef ARDUINO
 
-#include "IDoorSensor.h"
+#include "DoorSensor.h"
 #include <Arduino.h>
 
 class ArduinoDoorSensor final : public IDoorSensor {
