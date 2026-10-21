@@ -1,12 +1,9 @@
-// sim/main.cpp
-
 #include "../lib/AlarmCore/src/Alarm.h"
 #include "DummyDoorObserver.h"
 #include "DummyDoorSensor.h"
 #include "../lib/AlarmCore/src/DoorDebouncer.h"
 #include <Logger.h>
 
-#include <iostream>
 #include <chrono>
 #include <cstdint>
 #include <poll.h>
@@ -31,8 +28,7 @@ int main()
     DoorDebouncer db(door_sensor);
     db.setObserver(alarm);
 
-    std::cout << "a = abrir, c = cerrar, q = salir\n";
-    fflush(stdout);
+    LOG_DEBUG("a = abrir, c = cerrar, q = salir");
 
     char command;
     DoorState state = DoorState::Unknown;
@@ -41,10 +37,9 @@ int main()
 
     while (running)
     {
-
         door_sensor.set(state);
         db.update(millis());
-        
+
         pollfd input{STDIN_FILENO, POLLIN, 0};
         int result = poll(&input, 1, 0);
 
@@ -77,12 +72,12 @@ int main()
                     running = false;
                 else if (command == 'a')
                 {
-                    LOG_DEBUG("Opening the door");
+                    LOG_DEBUG("Door is opened");
                     state = DoorState::Open;
                 }
                 else if (command == 'c')
                 {
-                    LOG_DEBUG("Closing the door");
+                    LOG_DEBUG("Door is closed");
                     state = DoorState::Closed;
                 }
             }
@@ -95,37 +90,5 @@ int main()
         }
     }
 
-    /*
-    SimulatedHardware hardware;
-    AlarmApp app(hardware);
-
-    app.update();
-
-    std::cout << "LED: " << colorName(hardware.currentLed) << '\n';
-
-
-    char command;
-
-    while (std::cin >> command) {
-        if (command == 'q') {
-            break;
-        }
-
-        if (command == 'a') {
-            hardware.doorOpen = true;
-        } else if (command == 'c') {
-            hardware.doorOpen = false;
-        } else {
-            continue;
-        }
-
-        app.update();
-
-        std::cout
-            << "Puerta: " << (hardware.doorOpen ? "abierta" : "cerrada")
-            << " | LED: " << colorName(hardware.currentLed)
-            << '\n';
-    }
-    */
     return 0;
 }
