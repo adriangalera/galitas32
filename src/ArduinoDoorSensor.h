@@ -3,19 +3,22 @@
 #include "DoorSensor.h"
 #include <Arduino.h>
 
-class ArduinoDoorSensor final : public DoorSensor {
+class ArduinoDoorSensor final : public DoorSensor
+{
 public:
     explicit ArduinoDoorSensor(uint8_t pin)
         : pin_(pin) {}
 
-    void begin() {
+    void setup()
+    {
         pinMode(pin_, INPUT_PULLUP);
     }
 
-    DoorState read() const override {
+    DoorState read() const override
+    {
         return digitalRead(pin_) == LOW
-            ? DoorState::Closed
-            : DoorState::Open;
+                   ? DoorState::Closed
+                   : DoorState::Open;
     }
 
 private:

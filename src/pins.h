@@ -1,0 +1,1 @@
+#define DOOR_SENSOR_PIN 12

@@ -1,5 +1,5 @@
 /*
-Debounces events coming from a door sensor and only emits changes
+Debounces events coming from a door sensor and only emits changes via the observer
 */
 #pragma once
 #include "DoorSensor.h"

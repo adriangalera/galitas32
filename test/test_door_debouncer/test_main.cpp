@@ -61,7 +61,6 @@ void test_millis_wraparound()
 
 void test_debouncer_observer()
 {
-    // create a dummy door observer
     DummyDoorObserver observer;
     debouncer->setObserver(observer);
 
