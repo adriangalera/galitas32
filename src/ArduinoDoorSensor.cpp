@@ -3,7 +3,7 @@
 #include "DoorSensor.h"
 #include <Arduino.h>
 
-class ArduinoDoorSensor final : public IDoorSensor {
+class ArduinoDoorSensor final : public DoorSensor {
 public:
     explicit ArduinoDoorSensor(uint8_t pin)
         : pin_(pin) {}
