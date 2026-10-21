@@ -1,3 +1,5 @@
+#ifdef ARDUINO
+
 #include "IDoorSensor.h"
 #include <Arduino.h>
 
@@ -19,3 +21,4 @@ public:
 private:
     uint8_t pin_;
 };
+#endif
