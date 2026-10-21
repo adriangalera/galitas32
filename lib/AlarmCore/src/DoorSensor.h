@@ -5,6 +5,7 @@ Abstraction for a door sensor
 
 enum class DoorState
 {
+    Unknown,
     Closed,
     Open
 };

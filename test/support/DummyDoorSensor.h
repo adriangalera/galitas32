@@ -1,5 +1,5 @@
 #pragma once
-#include "DoorSensor.h"
+#include <DoorSensor.h>
 
 // Dummy door sensor that just returns the value set
 class DummyDoorSensor final : public DoorSensor {

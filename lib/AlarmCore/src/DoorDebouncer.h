@@ -2,9 +2,9 @@
 Debounces events coming from a door sensor and only emits changes
 */
 #pragma once
-#include <DoorSensor.h>
+#include "DoorSensor.h"
+#include "DoorObserver.h"
 #include <cstdint>
-
 class DoorDebouncer
 {
 public:
@@ -42,17 +42,34 @@ public:
             static_cast<uint32_t>(now - candidateSince_) >= debounceMs_)
         {
             stable_ = candidate_;
+            notify();
+
             return true;
         }
 
         return false;
     }
 
+    void setObserver(DoorObserver &observer)
+    {
+        observer_ = &observer;
+    }
+
 private:
+    DoorObserver *observer_ = nullptr;
+
     DoorSensor &sensor_;
     const uint32_t debounceMs_;
 
     DoorState stable_ = DoorState::Closed;
     DoorState candidate_ = DoorState::Closed;
     uint32_t candidateSince_ = 0;
+
+    void notify()
+    {
+        if (observer_ != nullptr)
+        {
+            observer_->onDoorStateChanged(state());
+        }
+    }
 };

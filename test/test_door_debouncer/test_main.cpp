@@ -1,6 +1,7 @@
 #include <unity.h>
 #include <memory>
 #include <DummyDoorSensor.h>
+#include <DummyDoorObserver.h>
 #include <DoorDebouncer.h>
 
 static DummyDoorSensor sensor;
@@ -58,6 +59,20 @@ void test_millis_wraparound()
     TEST_ASSERT_TRUE(debouncer->update(UINT32_MAX - 5 + 50));
 }
 
+void test_debouncer_observer()
+{
+    // create a dummy door observer
+    DummyDoorObserver observer;
+    debouncer->setObserver(observer);
+
+    sensor.set(DoorState::Open);
+    TEST_ASSERT_FALSE(debouncer->update(0));
+    TEST_ASSERT_TRUE(observer.get() == DoorState::Unknown);
+
+    TEST_ASSERT_TRUE(debouncer->update(60));
+    TEST_ASSERT_TRUE(observer.get() == DoorState::Open);
+}
+
 int main()
 {
     UNITY_BEGIN();
@@ -66,5 +81,6 @@ int main()
     RUN_TEST(test_event_not_repeated);
     RUN_TEST(test_bounce_restarts_timer);
     RUN_TEST(test_millis_wraparound);
+    RUN_TEST(test_debouncer_observer);
     return UNITY_END();
 }
