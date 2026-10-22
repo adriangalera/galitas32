@@ -1,3 +1,3 @@
 #pragma once
 
-#define DOOR_SENSOR_PIN 12
+constexpr uint8_t DOOR_SENSOR_PIN = 12;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <ArmDisarmObserver.h>
-#include <Logger.h>
+#include <card/ArmDisarmObserver.h>
+#include <utils/Logger.h>
 
 enum class ArmDisarmEvent
 {
@@ -13,19 +13,19 @@ enum class ArmDisarmEvent
 class InMemoryArmDisarmObserver : public ArmDisarmObserver
 {
 public:
-    void arm()
+    void arm() override
     {
         last_ = ArmDisarmEvent::Arm;
         LOG_DEBUG("Arming the alarm!");
     }
 
-    void disarm()
+    void disarm() override
     {
         last_ = ArmDisarmEvent::Disarm;
         LOG_DEBUG("Disarming the alarm!");
     }
 
-    ArmDisarmEvent get()
+    const ArmDisarmEvent get()
     {
         return last_;
     }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <DoorSensor.h>
+#include <door/DoorSensor.h>
 
 // Dummy door sensor that just returns the value set
 class InMemoryDoorSensor final : public DoorSensor {
