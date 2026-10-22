@@ -1,7 +1,7 @@
 #include <DoorObserver.h>
 #include <Logger.h>
 
-class DummyDoorObserver final : public DoorObserver
+class InMemoryDoorObserver final : public DoorObserver
 {
 public:
     void onDoorStateChanged(DoorState doorState)

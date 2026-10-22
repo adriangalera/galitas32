@@ -1,15 +1,15 @@
 #include <unity.h>
 #include <memory>
-#include <DummyDoorSensor.h>
-#include <DummyDoorObserver.h>
+#include <InMemoryDoorSensor.h>
+#include <InMemoryDoorObserver.h>
 #include <DoorDebouncer.h>
 
-static DummyDoorSensor sensor;
+static InMemoryDoorSensor sensor;
 static std::unique_ptr<DoorDebouncer> debouncer;
 
 void setUp()
 {
-    sensor = DummyDoorSensor();
+    sensor = InMemoryDoorSensor();
     debouncer = std::make_unique<DoorDebouncer>(sensor, 50);
     debouncer->begin(0);
 }
@@ -61,7 +61,7 @@ void test_millis_wraparound()
 
 void test_debouncer_observer()
 {
-    DummyDoorObserver observer;
+    InMemoryDoorObserver observer;
     debouncer->setObserver(observer);
 
     sensor.set(DoorState::Open);

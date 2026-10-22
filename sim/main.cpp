@@ -1,8 +1,8 @@
-#include "../lib/AlarmCore/src/Alarm.h"
-#include "DummyDoorObserver.h"
-#include "DummyDoorSensor.h"
-#include "../lib/AlarmCore/src/DoorDebouncer.h"
-#include <Logger.h>
+#include "Alarm.h"
+#include "InMemoryDoorObserver.h"
+#include "InMemoryDoorSensor.h"
+#include "DoorDebouncer.h"
+#include "Logger.h"
 
 #include <chrono>
 #include <cstdint>
@@ -24,7 +24,7 @@ uint32_t millis()
 int main()
 {
     Alarm alarm;
-    DummyDoorSensor door_sensor;
+    InMemoryDoorSensor door_sensor;
     DoorDebouncer db(door_sensor);
     db.setObserver(alarm);
 
