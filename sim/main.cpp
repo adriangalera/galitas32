@@ -1,6 +1,9 @@
 #include "Alarm.h"
 #include "InMemoryDoorObserver.h"
 #include "InMemoryDoorSensor.h"
+#include "InMemoryCardReader.h"
+#include "CardHoldDetector.h"
+#include "ArmDisarmObserver.h"
 #include "DoorDebouncer.h"
 #include "Logger.h"
 
@@ -23,12 +26,17 @@ uint32_t millis()
 
 int main()
 {
+    CardUid card{{0xDE, 0xAD, 0xBE, 0xEF}, 4};
+    CardUid emptyCard;
     Alarm alarm;
     InMemoryDoorSensor door_sensor;
     DoorDebouncer db(door_sensor);
     db.setObserver(alarm);
+    InMemoryCardReader card_reader;
+    CardHoldDetector holdDetector(card_reader);
+    holdDetector.setObserver(alarm);
 
-    LOG_DEBUG("a = abrir, c = cerrar, q = salir");
+    LOG_DEBUG("a = abrir, c = cerrar, t=acercar tarjeta, r=retirar tarjeta, q = salir");
 
     char command;
     DoorState state = DoorState::Unknown;
@@ -39,6 +47,7 @@ int main()
     {
         door_sensor.set(state);
         db.update(millis());
+        holdDetector.update(millis());
 
         pollfd input{STDIN_FILENO, POLLIN, 0};
         int result = poll(&input, 1, 0);
@@ -79,6 +88,16 @@ int main()
                 {
                     LOG_DEBUG("Door is closed");
                     state = DoorState::Closed;
+                }
+                else if (command == 't')
+                {
+                    LOG_DEBUG("RFID tag close");
+                    card_reader.set(true, card);
+                }
+                else if (command == 'r')
+                {
+                    LOG_DEBUG("RFID tag not close");
+                    card_reader.set(false, emptyCard);
                 }
             }
 
