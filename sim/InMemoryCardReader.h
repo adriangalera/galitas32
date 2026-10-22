@@ -1,3 +1,5 @@
+#pragma once
+
 #include <CardReader.h>
 #include <Logger.h>
 

@@ -43,6 +43,11 @@ int main()
 
     bool running = true;
 
+    //setup mock
+    db.begin(millis());
+
+
+    // loop mock
     while (running)
     {
         door_sensor.set(state);

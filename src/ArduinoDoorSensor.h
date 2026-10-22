@@ -1,3 +1,5 @@
+#pragma once
+
 #ifdef ARDUINO
 
 #include "DoorSensor.h"

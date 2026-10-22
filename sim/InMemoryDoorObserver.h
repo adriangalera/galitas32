@@ -1,3 +1,5 @@
+#pragma once
+
 #include <DoorObserver.h>
 #include <Logger.h>
 

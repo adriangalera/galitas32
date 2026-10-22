@@ -10,6 +10,7 @@ void setup()
 {
     Serial.begin(115200);
     door_sensor.setup();
+    db.begin();
 }
 
 void loop()
