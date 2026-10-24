@@ -33,6 +33,50 @@ jobs:
         if: ${{ !cancelled() && steps.tests.outcome != 'skipped' }}
         run: python scripts/coverage-report.py
 
+      - name: Display coverage summary
+        if: ${{ !cancelled() && hashFiles('coverage/summary.json') != '' }}
+        shell: python
+        run: |
+          import json
+          import os
+          from pathlib import Path
+
+          data = json.loads(
+              Path("coverage/summary.json").read_text(encoding="utf-8")
+          )
+
+          rows = [
+              "## Native code coverage",
+              "",
+              "| Metric | Covered | Total | Coverage |",
+              "| --- | ---: | ---: | ---: |",
+          ]
+
+          for key, label in [
+              ("line", "Lines"),
+              ("branch", "Branches"),
+              ("function", "Functions"),
+          ]:
+              covered = data[f"{key}_covered"]
+              total = data[f"{key}_total"]
+              percentage = (
+                  f"{100 * covered / total:.1f}%"
+                  if total else "N/A"
+              )
+              rows.append(
+                  f"| {label} | {covered} | {total} | {percentage} |"
+              )
+
+          rows.extend([
+              "",
+              "Download the **native-coverage** artifact for the detailed HTML report.",
+          ])
+
+          with open(
+              os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8"
+          ) as summary:
+              summary.write("\n".join(rows) + "\n")        
+
       - name: Upload coverage report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
@@ -97,9 +141,8 @@ jobs:
           path: |
             ~/.platformio/platforms
             ~/.platformio/packages
-            ~/.platformio/.cache
             .pio/libdeps/esp32s3
-          key: ${{ runner.os }}-${{ runner.arch }}-pio-esp32s3-v1-${{ hashFiles('platformio.ini') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-pio-esp32s3-v2-${{ hashFiles('platformio.ini') }}
 
       - name: Compile firmware
         run: pio run -e esp32s3
