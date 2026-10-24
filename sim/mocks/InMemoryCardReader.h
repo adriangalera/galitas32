@@ -1,12 +1,12 @@
 #pragma once
 
-#include <CardReader.h>
-#include <Logger.h>
+#include <card/CardReader.h>
+#include <utils/Logger.h>
 
 class InMemoryCardReader final : public CardReader
 {
 public:
-    bool read(CardUid &uid)
+    bool read(CardUid &uid) override
     {
 
         if (lastUid_.size != 0)

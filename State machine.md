@@ -10,6 +10,7 @@ This document describes the alarm states, transitions, signals, and recovery beh
 | Entry delay | 10 seconds |
 | Telegram alert reminder interval | 5 seconds |
 | LED command confirmation duration | 10 seconds |
+| RFID hold time to arm | 5 seconds |
 | Exit delay buzzer interval | 10 seconds |
 | Entry delay buzzer interval | 1 second |
 
@@ -28,6 +29,13 @@ not repeated sensor readings. Sensor input must be debounced before
 generating these events.
 
 Arm and Disarm represent authorized commands from RFID or Telegram.
+
+RFID commands:
+
+- Arm: the card has been held on the reader for the RFID hold time. It is
+  emitted once, at that moment, while the card is still on the reader.
+  Releasing the card afterwards produces no further command.
+- Disarm: the card is released before the hold time is reached (a tap).
 
 ### Timers
 

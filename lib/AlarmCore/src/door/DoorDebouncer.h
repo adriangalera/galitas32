@@ -9,16 +9,17 @@ class DoorDebouncer
 {
 public:
     explicit DoorDebouncer(
+        DoorObserver &observer,
         DoorSensor &sensor,
         uint32_t debounceMs = 50)
-        : sensor_(sensor),
-          debounceMs_(debounceMs) {}
+        : observer_(observer), sensor_(sensor), debounceMs_(debounceMs) {}
 
     void begin(uint32_t now)
     {
         stable_ = sensor_.read();
         candidate_ = stable_;
         candidateSince_ = now;
+        notify();
     }
 
     DoorState state() const
@@ -26,50 +27,42 @@ public:
         return stable_;
     }
 
-    bool update(uint32_t now)
+    void update(uint32_t now)
     {
         const DoorState reading = sensor_.read();
 
-        // Cada rebote reinicia el periodo de estabilidad.
+        // Every time the reading changes, we reset the candidate and the timer.
         if (reading != candidate_)
         {
             candidate_ = reading;
             candidateSince_ = now;
         }
 
-        // Solo aceptamos un estado distinto del ya confirmado.
+        //only accept a different state if it has been stable for the debounce period
         if (candidate_ != stable_ &&
             static_cast<uint32_t>(now - candidateSince_) >= debounceMs_)
         {
             stable_ = candidate_;
             notify();
 
-            return true;
+            return;
         }
 
-        return false;
-    }
-
-    void setObserver(DoorObserver &observer)
-    {
-        observer_ = &observer;
+        return;
     }
 
 private:
-    DoorObserver *observer_ = nullptr;
+    DoorObserver &observer_;
 
     DoorSensor &sensor_;
     const uint32_t debounceMs_;
 
-    DoorState stable_ = DoorState::Closed;
-    DoorState candidate_ = DoorState::Closed;
+    DoorState stable_ = DoorState::Unknown;
+    DoorState candidate_ = DoorState::Unknown;
     uint32_t candidateSince_ = 0;
 
     void notify()
     {
-        if (observer_ != nullptr)
-        {
-            observer_->onDoorStateChanged(state());
-        }
+        observer_.onDoorStateChanged(state());
     }
 };

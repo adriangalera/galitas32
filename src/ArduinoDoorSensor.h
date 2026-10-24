@@ -1,8 +1,6 @@
 #pragma once
 
-#ifdef ARDUINO
-
-#include "DoorSensor.h"
+#include <door/DoorSensor.h>
 #include <Arduino.h>
 
 class ArduinoDoorSensor final : public DoorSensor
@@ -24,6 +22,5 @@ public:
     }
 
 private:
-    uint8_t pin_;
+    const uint8_t pin_;
 };
-#endif

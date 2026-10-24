@@ -1,24 +1,97 @@
-#include "Alarm.h"
-#include "InMemoryDoorObserver.h"
-#include "InMemoryDoorSensor.h"
-#include "InMemoryCardReader.h"
-#include "CardHoldDetector.h"
-#include "ArmDisarmObserver.h"
-#include "DoorDebouncer.h"
-#include "Logger.h"
+#include <Alarm.h>
+#include "mocks/InMemoryDoorSensor.h"
+#include "mocks/InMemoryCardReader.h"
+#include "card/CardHoldDetector.h"
+#include "door/DoorDebouncer.h"
+#include "utils/Logger.h"
 
 #include <chrono>
 #include <cstdint>
-#include <poll.h>
-#include <unistd.h>
+#include <cstdio>
 #include <thread>
 
-uint32_t millis()
+#ifdef _WIN32
+#include <conio.h>
+#else
+#include <cerrno>
+#include <poll.h>
+#include <unistd.h>
+#endif
+
+namespace
+{
+constexpr int NoInput = -1;
+constexpr int InputClosed = -2;
+
+// Returns a character, NoInput, or InputClosed.
+int readCommand()
+{
+#ifdef _WIN32
+    if (!_kbhit())
+        return NoInput;
+
+    const int command = _getch();
+
+    // Consume special keys such as arrows and function keys.
+    if (command == 0 || command == 0xE0)
+    {
+        (void)_getch();
+        return NoInput;
+    }
+
+    return command;
+#else
+    pollfd input{};
+    input.fd = STDIN_FILENO;
+    input.events = POLLIN;
+
+    const int result = ::poll(&input, 1, 0);
+
+    if (result < 0)
+    {
+        if (errno == EINTR)
+            return NoInput;
+
+        std::perror("poll");
+        return InputClosed;
+    }
+
+    if (result == 0)
+        return NoInput;
+
+    // Read pending input before handling a possible hangup.
+    if (input.revents & POLLIN)
+    {
+        unsigned char command{};
+        const ssize_t count = ::read(STDIN_FILENO, &command, 1);
+
+        if (count > 0)
+            return static_cast<int>(command);
+
+        if (count == 0)
+            return InputClosed;
+
+        if (errno == EINTR || errno == EAGAIN)
+            return NoInput;
+
+        std::perror("read");
+        return InputClosed;
+    }
+
+    if (input.revents & (POLLERR | POLLHUP | POLLNVAL))
+        return InputClosed;
+
+    return NoInput;
+#endif
+}
+} // namespace
+
+std::uint32_t millis()
 {
     using Clock = std::chrono::steady_clock;
     static const auto start = Clock::now();
 
-    return static_cast<uint32_t>(
+    return static_cast<std::uint32_t>(
         std::chrono::duration_cast<std::chrono::milliseconds>(
             Clock::now() - start)
             .count());
@@ -27,91 +100,78 @@ uint32_t millis()
 int main()
 {
     CardUid card{{0xDE, 0xAD, 0xBE, 0xEF}, 4};
-    CardUid emptyCard;
+    CardUid emptyCard{};
+
     Alarm alarm;
-    InMemoryDoorSensor door_sensor;
-    DoorDebouncer db(door_sensor);
-    db.setObserver(alarm);
-    InMemoryCardReader card_reader;
-    CardHoldDetector holdDetector(card_reader);
-    holdDetector.setObserver(alarm);
+    InMemoryDoorSensor doorSensor;
+    InMemoryCardReader cardReader;
 
-    LOG_DEBUG("a = abrir, c = cerrar, t=acercar tarjeta, r=retirar tarjeta, q = salir");
+    DoorDebouncer debouncer(alarm, doorSensor);
+    CardHoldDetector holdDetector(alarm, cardReader);
 
-    char command;
-    DoorState state = DoorState::Unknown;
+    LOG_DEBUG(
+        "o = open door, c = close door, p = present card, "
+        "r = remove card, q = quit");
+
+#ifndef _WIN32
+    LOG_DEBUG("Press Enter after each command.");
+#endif
+
+    doorSensor.set(DoorState::Closed);
+    cardReader.set(false, emptyCard);
+    debouncer.begin(millis());
 
     bool running = true;
 
-    //setup mock
-    db.begin(millis());
-
-
-    // loop mock
     while (running)
     {
-        door_sensor.set(state);
-        db.update(millis());
-        holdDetector.update(millis());
+        const int command = readCommand();
 
-        pollfd input{STDIN_FILENO, POLLIN, 0};
-        int result = poll(&input, 1, 0);
-
-        if (result < 0)
+        switch (command)
         {
-            perror("poll");
+        case InputClosed:
+            LOG_DEBUG("Input closed or unavailable");
+            running = false;
+            break;
+
+        case 'q':
+            running = false;
+            break;
+
+        case 'o':
+            LOG_DEBUG("Sent door open");
+            doorSensor.set(DoorState::Open);
+            break;
+
+        case 'c':
+            LOG_DEBUG("Sent door close");
+            doorSensor.set(DoorState::Closed);
+            break;
+
+        case 'p':
+            LOG_DEBUG("RFID tag present");
+            cardReader.set(true, card);
+            break;
+
+        case 'r':
+            LOG_DEBUG("RFID tag removed");
+            cardReader.set(false, emptyCard);
+            break;
+
+        default:
+            // Ignore NoInput, newlines, and unrecognized keys.
             break;
         }
 
-        if (result > 0)
-        {
-            if (input.revents & POLLIN)
-            {
-                char command;
-                ssize_t count = ::read(STDIN_FILENO, &command, 1);
+        if (!running)
+            break;
 
-                if (count < 0)
-                {
-                    perror("read");
-                    break;
-                }
+        const std::uint32_t now = millis();
+        debouncer.update(now);
+        holdDetector.update(now);
 
-                if (count == 0)
-                {
-                    fprintf(stderr, "stdin cerrado\n");
-                    break;
-                }
-
-                if (command == 'q')
-                    running = false;
-                else if (command == 'a')
-                {
-                    LOG_DEBUG("Door is opened");
-                    state = DoorState::Open;
-                }
-                else if (command == 'c')
-                {
-                    LOG_DEBUG("Door is closed");
-                    state = DoorState::Closed;
-                }
-                else if (command == 't')
-                {
-                    LOG_DEBUG("RFID tag close");
-                    card_reader.set(true, card);
-                }
-                else if (command == 'r')
-                {
-                    LOG_DEBUG("RFID tag not close");
-                    card_reader.set(false, emptyCard);
-                }
-            }
-
-            if (input.revents & (POLLERR | POLLHUP | POLLNVAL))
-            {
-                fprintf(stderr, "stdin desconectado o no disponible\n");
-                break;
-            }
-        }
+        // Avoid busy-waiting while keeping the simulation responsive.
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
     return 0;
