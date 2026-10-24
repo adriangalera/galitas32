@@ -17,7 +17,7 @@ public:
         return present_;
     }
 
-    void set(bool present, CardUid &uid)
+    void set(bool present, const CardUid &uid)
     {
         present_ = present;
         lastUid_ = uid;
