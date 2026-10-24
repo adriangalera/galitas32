@@ -1,3 +1,9 @@
+/*
+Reads a card and notifies the observer when the card is held for a certain amount of time.
+Triggers arm() when the card is held for holdMs milliseconds, and disarm() when the card is released before that time.
+Contains also the logic to check if the card is allowed or not.
+*/
+
 #pragma once
 
 #include <cstdint>

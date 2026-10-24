@@ -1,8 +1,10 @@
 #include <Alarm.h>
 #include "mocks/InMemoryDoorSensor.h"
 #include "mocks/InMemoryCardReader.h"
+#include "mocks/RecordingLed.h"
 #include "card/CardHoldDetector.h"
 #include "door/DoorDebouncer.h"
+#include "led/LedController.h"
 #include "utils/Logger.h"
 
 #include <chrono>
@@ -103,7 +105,9 @@ std::uint32_t millis()
             CardUid invalidCard{{0xCA, 0xFE, 0xBA, 0xBE}, 4};
             CardUid emptyCard{};
             
-            Alarm alarm;
+            RecordingLed led;
+            LedController ledController{led};
+            Alarm alarm(ledController);
             InMemoryDoorSensor doorSensor;
             InMemoryCardReader cardReader;
             
@@ -183,9 +187,11 @@ std::uint32_t millis()
                     if (!running)
                     break;
                     
+                    // Arduino-like loop: update all components with the current time.
                     const std::uint32_t now = millis();
                     debouncer.update(now);
                     holdDetector.update(now);
+                    ledController.update(now);
                     
                     // Avoid busy-waiting while keeping the simulation responsive.
                     std::this_thread::sleep_for(std::chrono::milliseconds(5));

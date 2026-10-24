@@ -12,7 +12,7 @@ class CardReader
 public:
     virtual ~CardReader() = default;
 
-    // true: se ha leído una tarjeta y uid contiene su identificador.
-    // false: no hay una lectura disponible; uid no se modifica.
+    // Reads a card and returns true if a card was read, false otherwise.
+    // cardUid is filled with the card's UID if a card was read.
     virtual bool read(CardUid &uid) = 0;
 };

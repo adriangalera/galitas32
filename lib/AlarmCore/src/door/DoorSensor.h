@@ -20,7 +20,7 @@ inline const char* toString(DoorState state) noexcept
         return "Open";
     }
 
-    return "Unknown";
+    return "Unknown";  // GCOVR_EXCL_LINE
 }
 
 class DoorSensor
