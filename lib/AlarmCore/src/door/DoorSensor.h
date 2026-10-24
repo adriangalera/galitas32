@@ -14,19 +14,19 @@ inline const char* toString(DoorState state) noexcept
 {
     switch (state)
     {
-    case DoorState::Closed:
+        case DoorState::Closed:
         return "Closed";
-    case DoorState::Open:
+        case DoorState::Open:
         return "Open";
-    }
-
-    return "Unknown";  // GCOVR_EXCL_LINE
+        default:
+        return "Unknown";  // GCOVR_EXCL_LINE
+    } 
 }
 
 class DoorSensor
 {
-public:
+    public:
     virtual ~DoorSensor() = default;
-
+    
     virtual DoorState read() const = 0;
 };

@@ -141,9 +141,8 @@ jobs:
           path: |
             ~/.platformio/platforms
             ~/.platformio/packages
-            ~/.platformio/.cache
             .pio/libdeps/esp32s3
-          key: ${{ runner.os }}-${{ runner.arch }}-pio-esp32s3-v1-${{ hashFiles('platformio.ini') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-pio-esp32s3-v2-${{ hashFiles('platformio.ini') }}
 
       - name: Compile firmware
         run: pio run -e esp32s3

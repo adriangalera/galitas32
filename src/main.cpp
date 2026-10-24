@@ -2,9 +2,13 @@
 #include "ArduinoDoorSensor.h"
 #include <Alarm.h>
 #include <door/DoorDebouncer.h>
-#include "pins.h"
+#include "config.h"
+#include "NeoPixelLed.h"
 
-Alarm galitasAlarm;
+
+NeoPixelLed led(LED_PIN, LED_COUNT);
+LedController ledController(led);
+Alarm galitasAlarm(ledController);
 ArduinoDoorSensor door_sensor(DOOR_SENSOR_PIN);
 DoorDebouncer db(galitasAlarm, door_sensor);
 
@@ -20,5 +24,6 @@ void loop()
 {
     const unsigned long now = millis();
     db.update(now);
+    ledController.update(now);
     delay(1);
 }

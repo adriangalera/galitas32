@@ -6,6 +6,11 @@
 
 class RecordingLed final : public Led {
 public:
+
+    void begin() override {
+        // Initialization code for Recording LED
+    }
+
     void setColor(LedColor newColor) override {
         LOG_DEBUG("RecordingLed::setColor: %s", toString(newColor));
         color_ = newColor;
