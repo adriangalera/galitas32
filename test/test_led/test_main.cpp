@@ -1,5 +1,5 @@
 #include <unity.h>
-#include <stdint.h>
+#include <cstdint>
 #include <led/LedController.h>
 #include "mocks/RecordingLed.h"
 
