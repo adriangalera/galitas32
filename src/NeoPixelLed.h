@@ -11,7 +11,8 @@ class NeoPixelLed final : public Led {
     explicit NeoPixelLed(uint8_t pin, uint8_t ledCount)
     : pin_(pin), ledCount_(ledCount) {}
     
-    void begin() override {
+    void setup() override {
+        LOG_DEBUG("NeoPixelLed::setup: pin=%d, ledCount=%d", pin_, ledCount_);
         strip_ = Adafruit_NeoPixel(ledCount_, pin_, NEO_GRB + NEO_KHZ800);
         strip_.begin();
         strip_.clear();

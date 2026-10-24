@@ -37,6 +37,6 @@ inline const char* toString(LedColor color) noexcept
 class Led {
     public:
     virtual ~Led() = default;
-    virtual void begin() = 0;
+    virtual void setup() = 0;
     virtual void setColor(LedColor color) = 0;
 };

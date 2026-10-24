@@ -7,7 +7,7 @@
 class RecordingLed final : public Led {
 public:
 
-    void begin() override {
+    void setup() override {
         // Initialization code for Recording LED
     }
 

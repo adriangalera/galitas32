@@ -9,21 +9,24 @@
 NeoPixelLed led(LED_PIN, LED_COUNT);
 LedController ledController(led);
 Alarm galitasAlarm(ledController);
-ArduinoDoorSensor door_sensor(DOOR_SENSOR_PIN);
-DoorDebouncer db(galitasAlarm, door_sensor);
+ArduinoDoorSensor doorSensor(DOOR_SENSOR_PIN);
+DoorDebouncer doorDebouncer(galitasAlarm, doorSensor);
 
 void setup()
 {
     const unsigned long now = millis();
+    LOG_DEBUG("Setting up the board and the sensors...");
     Serial.begin(115200);
-    door_sensor.setup();
-    db.begin(now);
+    doorSensor.setup();
+    led.setup();
+    doorDebouncer.begin(now);
+    LOG_DEBUG("Set up complete at %lu ms", now);
 }
 
 void loop()
 {
     const unsigned long now = millis();
-    db.update(now);
+    doorDebouncer.update(now);
     ledController.update(now);
     delay(1);
 }

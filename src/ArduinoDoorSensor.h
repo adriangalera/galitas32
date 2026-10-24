@@ -2,6 +2,7 @@
 
 #include <door/DoorSensor.h>
 #include <Arduino.h>
+#include <utils/Logger.h>
 
 class ArduinoDoorSensor final : public DoorSensor
 {
@@ -11,6 +12,7 @@ public:
 
     void setup()
     {
+        LOG_DEBUG("ArduinoDoorSensor::setup: pin=%d", pin_);
         pinMode(pin_, INPUT_PULLUP);
     }
 
