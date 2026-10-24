@@ -4,7 +4,7 @@ The state machine will implement this interface and receive the door state chang
 */
 #pragma once
 
-#include "DoorSensor.h"
+#include <door/DoorSensor.h>
 
 class DoorObserver
 {

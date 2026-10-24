@@ -1,11 +1,11 @@
 #include <Alarm.h>
-#include "mocks/InMemoryDoorSensor.h"
-#include "mocks/InMemoryCardReader.h"
-#include "mocks/RecordingLed.h"
-#include "card/CardHoldDetector.h"
-#include "door/DoorDebouncer.h"
-#include "led/LedController.h"
-#include "utils/Logger.h"
+#include <mocks/InMemoryDoorSensor.h>
+#include <mocks/InMemoryCardReader.h>
+#include <mocks/RecordingLed.h>
+#include <card/CardHoldDetector.h>
+#include <door/DoorDebouncer.h>
+#include <led/LedController.h>
+#include <utils/Logger.h>
 
 #include <chrono>
 #include <cstdint>

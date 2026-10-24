@@ -11,7 +11,7 @@ The algorithm selects the signal with the highest priority to be displayed on th
 #pragma once
 
 #include <stdint.h>
-#include "Led.h"
+#include <led/Led.h>
 
 class LedController {
 public:

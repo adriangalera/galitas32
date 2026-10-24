@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "ArduinoDoorSensor.h"
+#include <ArduinoDoorSensor.h>
 #include <Alarm.h>
 #include <door/DoorDebouncer.h>
-#include "config.h"
-#include "NeoPixelLed.h"
+#include <config.h>
+#include <NeoPixelLed.h>
 
 
 NeoPixelLed led(LED_PIN, LED_COUNT);

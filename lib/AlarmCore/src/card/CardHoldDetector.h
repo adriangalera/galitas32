@@ -8,8 +8,8 @@ Contains also the logic to check if the card is allowed or not.
 
 #include <cstdint>
 #include <cstring>
-#include "CardReader.h"
-#include "ArmDisarmObserver.h"
+#include <card/CardReader.h>
+#include <card/ArmDisarmObserver.h>
 #include <AllowedCards.h>
 #include <utils/Logger.h>
 
