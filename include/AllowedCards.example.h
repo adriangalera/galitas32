@@ -1,0 +1,8 @@
+#pragma once
+
+#include <card/CardReader.h>
+
+static const CardUid allowedCards[] = {
+    {{0x11, 0x22, 0x33, 0x44}, 4},
+    {{0xAA, 0xBB, 0xCC, 0xDD}, 4},
+};

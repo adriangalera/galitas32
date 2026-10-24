@@ -14,15 +14,13 @@ inline const char* toString(DoorState state) noexcept
 {
     switch (state)
     {
-    case DoorState::Unknown:
-        return "Unknown";
     case DoorState::Closed:
         return "Closed";
     case DoorState::Open:
         return "Open";
     }
 
-    return "Invalid";
+    return "Unknown";
 }
 
 class DoorSensor

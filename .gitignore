@@ -8,3 +8,5 @@ src/secrets.h
 case/build/
 case/verification_output
 coverage
+
+include/AllowedCards.local.h
